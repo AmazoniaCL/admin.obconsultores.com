@@ -71,6 +71,7 @@
                         <ul class="sub-menu {{ Request::is('administrador/documentacion_legal') ? 'collapse in' : '' }}{{ Request::is('administrador/personal') ? 'collapse in' : '' }}{{ Request::is('administrador/personal/*') ? 'collapse in' : '' }}" aria-expanded="{{ Request::is('administrador/documentacion_legal') ? 'true' : 'false' }}{{ Request::is('administrador/personal') ? 'true' : 'false' }}{{ Request::is('administrador/personal/*') ? 'true' : 'false' }}">
                             <li class="{{ Request::is('administrador/documentacion_legal') ? 'active' : '' }}"><a href="{{route('documentacion')}}"><i class="icon-briefcase"></i><span data-hover="Documentación L.">Documentación {{ Request::is('administrador/documentacion_legal') ? 'L.' : 'Legal' }}</span></a></li>
                             <li class="{{ Request::is('administrador/personal') ? 'active' : '' }}{{ Request::is('administrador/personal/*') ? 'active' : '' }}"><a href="{{route('personal')}}"><i class="icon-users"></i><span data-hover="Personal">Personal</span></a></li>
+                            <li class="{{ Request::is('administrador/pagina-web') ? 'active' : '' }}{{ Request::is('administrador/pagina-web/*') ? 'active' : '' }}"><a href="{{route('pagina-web')}}"><i class="icon-laptop"></i><span data-hover="Pagina_Web">Pagina Web</span></a></li>
                         </ul>
                     </li>
 

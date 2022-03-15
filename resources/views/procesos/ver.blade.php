@@ -51,6 +51,12 @@
             </div>
         @endif
 
+        @if (session()->has('fiscal') && session()->has('fiscal') == 1)
+            <div class="alert alert-icon alert-success col-12" role="alert">
+                <i class="fe fe-check mr-2" aria-hidden="true"></i> Se actualizo la información de la fiscalía correctamente.
+            </div>
+        @endif
+
         <div class="card card-collapsed collapse" id="collapseAcceso">
             <div class="card-header">
                 <h3 class="card-title">Demandante/s</h3>
@@ -602,6 +608,71 @@
 
         </form>
 
+        @if ($proceso[0]->tipo == "Penal")
+            <form action="/procesos/fiscalia" method="post" style="display: contents;" enctype="multipart/form-data">
+                @csrf
+
+                <div class="card card-collapsed mb-2" id="card_fiscalia">
+                    <div class="card-header">
+                        <h3 class="card-title">Fiscalía</h3>
+                        <div class="card-options">
+
+                            @if (!$proceso[0]->fiscalia)
+                                <p><b>Aun no hay Fiscalía</b></p>
+                            @elseif (!$proceso[0]->fiscal)
+                                <p><b>Aun no hay Fiscal</b></p>
+                            @endif
+
+                            <a href="#" class="card-options-collapse mr-3" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+
+                            <button type="button" class="btn btn-primary btn-sm" id="btn_habilitar_actualizar_fiscalia" onclick="habilitar_formularo_fiscalia()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
+                            <button type="submit" class="btn text-white btn-sm bg-green d-none" id="btn_enviar_actualizar_fiscalia"><i class="fe fe-check mr-2"></i> Enviar </button>
+                            <button type="button" class="btn text-white btn-sm bg-red ml-1 d-none" id="btn_cancelar_actualizar_fiscalia" onclick="deshabilitar_formularo_fiscalia()"><i class="fa fa-times"></i>  </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-2 col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Fiscalía</label>
+                                    <input type="text" class="form-control" name="fiscalia" id="fiscalia" readonly value="{{ $proceso[0]->fiscalia }}">
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Fiscal</label>
+                                    <input type="text" class="form-control" name="fiscal" id="fiscal" readonly value="{{ $proceso[0]->fiscal }}">
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">Telefono</label>
+                                    <input type="number" class="form-control" name="telefono_fiscal" id="telefono_fiscal" readonly value="{{ $proceso[0]->telefono_fiscal }}">
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">Direccion</label>
+                                    <input type="text" class="form-control" name="direccion_fiscal" id="direccion_fiscal" readonly value="{{ $proceso[0]->direccion_fiscal }}">
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">Correo</label>
+                                    <input type="email" class="form-control" name="correo_fiscal" id="correo_fiscal" readonly value="{{ $proceso[0]->correo_fiscal }}">
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="proceso_id" value="{{ $proceso[0]->id }}">
+
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        @endif
+
+
         <div class="card card-collapsed mb-2" id="card_demandantes">
             <div class="card-header">
                 <h3 class="card-title">Demandante/s</h3>
@@ -935,6 +1006,83 @@
             </div>
         </div>
 
+        <div class="card card-collapsed mb-2" id="card_audiencias">
+            <div class="card-header">
+                <h3 class="card-title">Audiencias</h3>
+                <div class="card-options">
+                    @if ($audiencias->count() == 0)
+                        <p><b>No hay audiencias</b></p>
+                    @else
+                        <p><b>Hay {{ $audiencias->count() }} audiencias</b></p>
+                    @endif
+
+                    <a href="#" class="card-options-collapse mr-3" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+
+                    <button type="button" class="btn btn-primary btn-sm" onclick="agregar_audiencia()" data-toggle="collapse" data-target="#agg_audiencia" aria-expanded="false" aria-controls="agg_audiencia"><i class="fe fe-plus mr-2"></i> Agregar </button>
+
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="card p-5 collapse" id="agg_audiencia" style="border: solid 1px #cda854;background: #e9ecef !important;">
+                        <form action="/procesos/agg_audiencia" id="form_agg_audiencia" method="post">
+                            @csrf
+
+                                <div class="row">
+                                    <div class="form-group col-2">
+                                        <label class="form-label">Fecha</label>
+                                        <input data-provide="datepicker" data-date-format='yyyy-mm-dd' data-date-autoclose="true" name="fecha_audiencia" id="fecha_audiencia" class="form-control" placeholder="MM/DD/AAAA" required autocomplete="off" required>
+                                    </div>
+                                    <div class="form-group col-9">
+                                        <label class="form-label">Observaciones</label>
+                                        <input type="text" class="form-control" name="observaciones" id="observaciones" placeholder="Escriba las observaciones">
+                                    </div>
+                                    <input type="hidden" name="procesos_id" value="{{ $proceso[0]->id }}">
+                                    <input type="hidden" name="audiencia_id" id="audiencia_id" value="">
+
+                                    <div class="form-group col-1">
+                                        <button type="submit" class="btn btn-primary btn-lg text-center mt-4" id="btn_agg_audiencia">Enviar</button>
+                                    </div>
+                                </div>
+
+                        </form>
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Observaciones</th>
+                                <th>Fecha</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        @foreach ($audiencias as $key => $row)
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>{{ $key + 1 }}</b>
+                                    </td>
+                                    <td>
+                                        {{ $row->observaciones }}
+                                    </td>
+                                    <td>
+                                        <b>{{ $row->fecha ?? 'N/A' }}
+                                    </td>
+                                    <td rowspan="2" class="text-center">
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="editar_audiencia({{ $row->id }})" title="Editar"><i class="fa fa-edit"></i></button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="eliminar_audiencia({{ $row->id }})" title="Eliminar"><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        @endforeach
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
         <div class="row clearfix">
             <div class="col-md-12">
                 @if (session()->has('update_actuacion') && session()->has('update_actuacion') == 1)
@@ -961,42 +1109,17 @@
                     <div class="card-header">
                         <h3 class="card-title">Actuaciones </h3>
                         <div class="card-options">
-                            @if (isset($proxima_audiencia))
+                            {{-- @if (isset($proxima_audiencia))
                             <h4 class="mr-3">Proxima Audiencia en: {{ ($proxima_audiencia == 'Hoy') ? 'Hoy' : $proxima_audiencia.' Dias' }} </h4>
                             <button type="button" onclick="editar_audiencia({{ $audiencias[0]->id ?? '' }}, '{{ $audiencias[0]->fecha ?? '' }}', '{{ $audiencias[0]->observaciones ?? '' }}')" class="btn btn-primary btn-sm mr-2"><i class="fe fe-edit"></i></button>
                             @else
                                 <button type="button" onclick="agregar_audiencia()" data-toggle="collapse" data-target="#agg_audiencia" aria-expanded="false" aria-controls="agg_audiencia" class="btn btn-primary btn-sm mr-2">Agregar audiencia</button>
-                            @endif
+                            @endif --}}
 
                             <button type="button" data-toggle="collapse" data-target="#agg_actuacion" aria-expanded="false" aria-controls="agg_actuacion" class="btn btn-primary btn-sm">Agregar +</button>
                         </div>
                     </div>
                     <div class="card-body table-responsive">
-
-                        <div class="card p-5 collapse" id="agg_audiencia" style="border: solid 1px #cda854;background: #e9ecef !important;">
-                            <form action="/procesos/agg_audiencia" id="form_agg_audiencia" method="post">
-                                @csrf
-
-                                    <div class="row">
-                                        <div class="form-group col-2">
-                                            <label class="form-label">Fecha</label>
-                                            <input data-provide="datepicker" data-date-format='yyyy-mm-dd' data-date-autoclose="true" name="fecha_audiencia" id="fecha_audiencia" class="form-control" placeholder="MM/DD/AAAA" required autocomplete="off" required>
-                                        </div>
-                                        <div class="form-group col-9">
-                                            <label class="form-label">Observaciones</label>
-                                            <input type="text" class="form-control" name="observaciones" id="observaciones" placeholder="Escriba las observaciones">
-                                        </div>
-                                        <input type="hidden" name="procesos_id" value="{{ $proceso[0]->id }}">
-                                        <input type="hidden" name="audiencia_id" id="audiencia_id" value="">
-
-                                        <div class="form-group col-1">
-                                            <button type="submit" class="btn btn-primary btn-lg text-center mt-4" id="btn_agg_audiencia">Agregar</button>
-                                        </div>
-                                    </div>
-
-                            </form>
-                        </div>
-
                         <div class="card p-5 collapse" id="agg_actuacion" style="border: solid 1px #cda854;background: #e9ecef !important;">
                             <form action="/procesos/agregar_actuacion" id="form_agg_actuacion" method="post" enctype="multipart/form-data">
                                 @csrf
@@ -1063,13 +1186,13 @@
                                             <td>{{ $actuacion->f_inicio_termino ?? 'No aplica' }}</td>
                                             <td>{{ $actuacion->f_fin_termino ?? 'No aplica' }}</td>
                                             <td class="text-center">
+                                                @if ($actuacion->anotacion_file)
+                                                    <a href="/storage/{{ $actuacion->anotacion_file }}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
+                                                @endif
                                                 @if($actuacion->anotaciones)
                                                     @foreach ($actuacion->anotaciones as $anotacion)
-                                                        <a href="http://admin.obconsultores.com/storage/{{ $anotacion->anotacion_file }}" title="{{$anotacion->anotacion_file}}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
-                                                        
+                                                        <a href="/storage/{{ $anotacion->anotacion_file }}" title="{{$anotacion->anotacion_file}}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
                                                     @endforeach
-                                                @else
-                                                    <a href="http://admin.obconsultores.com/storage/{{ $actuacion->anotacion_file }}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
                                                 @endif
                                                 <a href="javascript:;" onclick="update_actuacion({{ $actuacion->id }})" class="ml-2 text-dark h5"><i class="fa fa-pencil"></i></a>
                                                 <a href="javascript:;" onclick="eliminar_actuacion({{ $actuacion->id }})" class="ml-2 text-red h5"><i class="fa fa-close"></i></a>

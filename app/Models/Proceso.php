@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Proceso extends Model
 {
     protected $fillable = [
-        'id', 'codigo', 'num_proceso', 'tipo', 'sub_tipo', 'tipo_insolvencia', 'departamento', 'ciudad', 'descripcion', 'proceso_file', 'contrato', 'poder', 'titulo_valor', 'radicado', 'juzgado', 'juez', 'direccion', 'telefono', 'correo','clientes_id', 'users_id'
+        'id', 'codigo', 'num_proceso', 'tipo', 'sub_tipo', 'tipo_insolvencia', 'departamento', 'ciudad', 'descripcion', 'proceso_file', 'contrato', 'poder', 'titulo_valor', 'radicado', 'juzgado', 'juez', 'direccion', 'telefono', 'correo', 'fiscalia', 'fiscal', 'telefono_fiscal', 'direccion_fiscal', 'correo_fiscal', 'clientes_id', 'users_id'
     ];
 
     public function clientes() {

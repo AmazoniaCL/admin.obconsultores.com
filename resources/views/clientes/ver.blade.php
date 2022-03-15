@@ -416,8 +416,7 @@
                         <table class="table table-hover table-vcenter table-striped">
                             <thead>
                                 <tr>
-                                    <th>Numero</th>
-                                    <th>Fecha</th>
+                                    <th>Demandado/Demandante</th>
                                     <th>Tipo</th>
                                     <th>Radicado</th>
                                     <th>Juzgado</th>
@@ -429,8 +428,11 @@
 
                                 @foreach ($procesos as $proceso)
                                     <tr>
-                                        <td class="width40">{{ $proceso->num_proceso }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($proceso->created_at)->format('d/m/Y') }}</td>
+                                        <td class="width50">
+                                            <b>Demandado:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandado')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandados' }}
+                                            <br>
+                                            <b>Demandante:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandante')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandantes' }}
+                                        </td>
                                         <td>{{ $proceso->tipo }}</td>
                                         <td>{{ $proceso->radicado ?? 'N/A' }}</td>
                                         <td>{{ $proceso->juzgado ?? 'N/A' }}</td>

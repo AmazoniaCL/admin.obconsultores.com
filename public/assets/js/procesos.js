@@ -88,11 +88,15 @@ function cargar_subarea(area) {
             $('#sub_tipo_div').html(`
             <select class="form-control custom-select" name="sub_tipo" id="sub_tipo" onchange="cargar_tipo(this.value)">
                 <option value="">Seleccione la sub area</option>
-                <option value="Sub area Penal">Sub area Penal</option>
-                <option value="Sub area Penal">Sub area Penal</option>
-                <option value="Sub area Penal">Sub area Penal</option>
-                <option value="Sub area Penal">Sub area Penal</option>
-                <option value="Sub area Penal">Sub area Penal</option>
+                <option value="Lesiones Personales">Lesiones Personales</option>
+                <option value="Homicidio">Homicidio</option>
+                <option value="Delitos Sexuales">Delitos Sexuales</option>
+                <option value="Extorsión">Extorsión</option>
+                <option value="Secuestro">Secuestro</option>
+                <option value="Concierto para delinquir">Concierto para delinquir</option>
+                <option value="Injuria y Calumnia">Injuria y Calumnia</option>
+                <option value="Abuso de confianza">Abuso de confianza</option>
+                <option value="Falsificación de documento privado">Falsificación de documento privado</option>
             </select>
             `)
             break;
@@ -386,7 +390,7 @@ function editar_audiencia(id, fecha, observaciones) {
 
     $('#form_agg_audiencia').attr('action', '/procesos/update_audiencia');
     $('#btn_agg_audiencia').text('Actualizar');
-    $('#agg_audiencia').collapse('show')
+    $('#agg_audiencia').collapse('show');
 }
 
 function agregar_audiencia() {
@@ -396,6 +400,7 @@ function agregar_audiencia() {
 
     $('#form_agg_audiencia').attr('action', '/procesos/agg_audiencia');
     $('#btn_agg_audiencia').text('Enviar');
+    $('#card_audiencias').removeClass('card-collapsed');
 }
 
 function agregar_demandados() {
@@ -551,6 +556,12 @@ function agg_demandado() {
     $('#agg_demandado').collapse('show');
     $('#form_agg_demandado')[0].reset();
     $('#tipo_demandado').val('Demandado');
+}
+
+function agg_audiencia() {
+    $('#card_audiencia').removeClass('card-collapsed');
+    $('#agg_audiencia').collapse('show');
+    $('#form_agg_audiencia')[0].reset();
 }
 
 function agg_demandante() {
@@ -721,6 +732,35 @@ function eliminar_demandado(id) {
     }
 }
 
+function editar_audiencia(id) {
+    $.ajax({
+        url: '/procesos/searh/audiencia',
+        type: 'POST',
+        data: { id:id },
+        success: function (data) {
+            $('#fecha_audiencia').val(data.fecha);
+            $('#observaciones').val(data.observaciones);
+            $('#audiencia_id').val(data.id);
+
+            $('#agg_audiencia').collapse('show');
+        }
+    });
+}
+
+function eliminar_audiencia(id) {
+    if (window.confirm("¿Seguro desea eliminar la audiencia?")) {
+        $.ajax({
+            url: '/procesos/delete/audiencia',
+            type: 'post',
+            data: {id:id},
+            success: function (data) {
+                $('#delete_confirmed').removeClass('d-none');
+                setTimeout(function(){ location.reload(); }, 600);
+            }
+        });
+    }
+}
+
 function editar_demandante(id) {
     $.ajax({
         url: '/procesos/searh/detalle_proceso',
@@ -775,6 +815,34 @@ function deshabilitar_formularo_juzgado() {
     $('#btn_habilitar_actualizar_juzgado').removeClass('d-none');
     $('#btn_enviar_actualizar_juzgado').addClass('d-none');
     $('#btn_cancelar_actualizar_juzgado').addClass('d-none');
+
+    // $('#card_juzgado').removeClass('card-collapsed');
+}
+
+function habilitar_formularo_fiscalia() {
+    $('#fiscalia').prop("readonly", false);
+    $('#fiscal').prop("readonly", false);
+    $('#telefono_fiscal').prop("readonly", false);
+    $('#direccion_fiscal').prop("readonly", false);
+    $('#correo_fiscal').prop("readonly", false);
+
+    $('#btn_habilitar_actualizar_fiscalia').addClass('d-none');
+    $('#btn_enviar_actualizar_fiscalia').removeClass('d-none');
+    $('#btn_cancelar_actualizar_fiscalia').removeClass('d-none');
+
+    $('#card_fiscalia').removeClass('card-collapsed');
+}
+
+function deshabilitar_formularo_fiscalia() {
+    $('#fiscalia').prop("readonly", true);
+    $('#fiscal').prop("readonly", true);
+    $('#telefono_fiscal').prop("readonly", true);
+    $('#direccion_fiscal').prop("readonly", true);
+    $('#correo_fiscal').prop("readonly", true);
+
+    $('#btn_habilitar_actualizar_fiscalia').removeClass('d-none');
+    $('#btn_enviar_actualizar_fiscalia').addClass('d-none');
+    $('#btn_cancelar_actualizar_fiscalia').addClass('d-none');
 
     // $('#card_juzgado').removeClass('card-collapsed');
 }

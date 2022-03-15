@@ -7,6 +7,7 @@ use App\Models\Documentacion;
 use App\Models\Documentos_personal;
 use App\Models\Otro_si;
 use App\Models\Personal;
+use App\Models\Config_pagina;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -73,7 +74,7 @@ class AdminController extends Controller
             $ruta_file = 'docs/documentos_legales/';
             $nombre_file = 'documento_'.$date->isoFormat('YMMDDHmmss').'.'.$extension_file;
             Storage::disk('public')->put($ruta_file.$nombre_file, File::get($request->file('file')));
-    
+
             $nombre_completo_file = $ruta_file.$nombre_file;
         }
 
@@ -98,7 +99,7 @@ class AdminController extends Controller
             return redirect()->back()->with(['create' => 1]);
         }
 
-        
+
     }
 
     public function personal(){
@@ -161,7 +162,7 @@ class AdminController extends Controller
 
     public function print_contrato(Request $request) {
         $contrato = Contratos_personal::with('personal')->find($request['id']);
-        
+
         return PDF::loadView('administrador.contrato', compact('contrato'))->setPaper('A4')->stream('certificado.pdf');
     }
 
@@ -179,7 +180,7 @@ class AdminController extends Controller
     public function editar_contrato(Request $request) {
         return Contratos_personal::find($request['id']);
     }
-    
+
     public function cargar_documentos(Request $request) {
         return Documentos_personal::where('tipo', $request['tipo'])->where('personal_id', $request['personal_id'])->get();
     }
@@ -208,7 +209,7 @@ class AdminController extends Controller
                 $nombre_completo_file_documento = $ruta_file_documento.$nombre_file_documento;
 
                 Storage::disk('public')->delete($documento->adjunto);
-                
+
                 $documento->update([
                     'adjunto' => $nombre_completo_file_documento
                 ]);
@@ -287,6 +288,40 @@ class AdminController extends Controller
         $documento->delete();
         return ['tipo' => $request['tipo'], 'personal_id' => $request['personal_id'], 'isfecha' => $request['isfecha']];
     }
+
+    public function pagina_web() {
+        $config = Config_pagina::first();
+        return view('administrador.pagina_web', ['config' => $config]);
+    }
+
+    public function pagina_web_update(Request $request) {
+        $config = Config_pagina::first();
+
+        if(!$config) {
+            Config_pagina::create([
+                'telefono' => $request['telefono'],
+                'direccion' => $request['direccion'],
+                'correo' => $request['correo'],
+                'facebook' => $request['facebook'],
+                'twitter' => $request['twitter'],
+                'instagram' => $request['instagram']
+            ]);
+
+            return redirect()->route('pagina-web')->with(['update' => 1]);
+        }
+
+        $config->update([
+            'telefono' => $request['telefono'],
+            'direccion' => $request['direccion'],
+            'correo' => $request['correo'],
+            'facebook' => $request['facebook'],
+            'twitter' => $request['twitter'],
+            'instagram' => $request['instagram']
+        ]);
+
+        return redirect()->route('pagina-web')->with(['update' => 1]);
+    }
+
     public function callAction($method, $parameters)
     {
         return parent::callAction($method, array_values($parameters));
