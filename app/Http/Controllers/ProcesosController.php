@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SincronizarActuaciones;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
@@ -318,7 +319,13 @@ class ProcesosController extends Controller
                 $proxima_audiencia = 'Hoy';
             }
         }
-        return view('procesos.ver', ['proceso' =>$proceso, 'audiencias' => $audiencias, 'proxima_audiencia' => $proxima_audiencia ?? NULL, 'detalle_proceso_demandado' => $detalle_proceso_demandado, 'detalle_proceso_demandante' => $detalle_proceso_demandante]);
+        return view('procesos.ver', [
+            'proceso' =>$proceso,
+            'audiencias' => $audiencias,
+            'proxima_audiencia' => $proxima_audiencia ?? NULL,
+            'detalle_proceso_demandado' => $detalle_proceso_demandado,
+            'detalle_proceso_demandante' => $detalle_proceso_demandante
+        ]);
     }
 
     public function agregar_actuacion(Request $request) {
@@ -349,10 +356,8 @@ class ProcesosController extends Controller
                     'actuaciones_id' => $actuacion->id,
                 ]);
             }
-            
-        }
 
-        
+        }
 
         return redirect()->route('ver-proceso', [ 'id' => $request['procesos_id'] ]);
     }
@@ -486,7 +491,24 @@ class ProcesosController extends Controller
     }
 
     public function delete(Request $request) {
-        return Proceso::find($request['id'])->delete();
+        $tipo = 'danger';
+        $mensaje = 'El proceso no se elimino, intente nuevamente';
+
+        if(auth()->user()->hasRole('admin') || auth()->user()->id == $request['id']) {
+            if(Proceso::find($request['id'])->delete()) {
+                $tipo = 'success';
+                $mensaje = 'Proceso eliminado correctamente';
+            } else {
+                $tipo = 'danger';
+                $mensaje = 'El proceso no se elimino, intente nuevamente';
+            }
+        }
+
+        return redirect()->back()->with([
+            'mostrar_alerta' => 1,
+            'tipo' => $tipo,
+            'mensaje' => $mensaje
+        ]);
     }
 
     public function delete_actuacion(Request $request) {
@@ -516,7 +538,7 @@ class ProcesosController extends Controller
                     'actuaciones_id' => $actuacion->id,
                 ]);
             }
-            
+
         }
         $actuacion->update([
             'fecha' => $request['fecha'],
@@ -820,6 +842,11 @@ class ProcesosController extends Controller
     public function callAction($method, $parameters)
     {
         return parent::callAction($method, array_values($parameters));
+    }
+
+    public function testjob(Request $request) {
+        $job = new SincronizarActuaciones();
+        $job->handle();
     }
 }
 

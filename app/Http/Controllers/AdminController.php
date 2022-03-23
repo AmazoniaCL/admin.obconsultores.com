@@ -28,12 +28,37 @@ class AdminController extends Controller
     }
 
     public function usuarios_create(Request $request) {
+        if($request->id) {
+            $dataSet = [
+                'identificacion' => $request['identificacion'],
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'estado' => $request['estado']
+            ];
+
+            if($request['password']) $dataSet['password'] =  Hash::make($request['password']);
+
+            $user = User::find($request->id);
+            $user->update($dataSet);
+
+            $user->syncRoles([]);
+            $user->assignRole($request['rol']);
+
+            $usuarios = User::paginate(10);
+            return redirect()->back()->with([
+                'creado' => 1,
+                'tipo' => 'success',
+                'mensaje' => 'Usuario actualizado correctamente',
+                'usuarios' => $usuarios
+            ]);
+        }
+
         $usuario = User::create([
             'identificacion' => $request['identificacion'],
             'name' => $request['name'],
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
-            'estado' => 'Activo'
+            'estado' => $request['estado']
         ]);
 
         if ( $usuario->save() ) {
@@ -41,8 +66,12 @@ class AdminController extends Controller
             $usuario->givePermissionTo($request['permisos']);
 
             $usuarios = User::paginate(10);
-
-            return redirect()->back()->with(['creado' => 1, 'usuarios' => $usuarios]);
+            return redirect()->back()->with([
+                'creado' => 1,
+                'tipo' => 'success',
+                'mensaje' => 'Usuario creado correctamente',
+                'usuarios' => $usuarios
+            ]);
         }
     }
 
@@ -73,7 +102,7 @@ class AdminController extends Controller
             $ruta_file = 'docs/documentos_legales/';
             $nombre_file = 'documento_'.$date->isoFormat('YMMDDHmmss').'.'.$extension_file;
             Storage::disk('public')->put($ruta_file.$nombre_file, File::get($request->file('file')));
-    
+
             $nombre_completo_file = $ruta_file.$nombre_file;
         }
 
@@ -98,7 +127,7 @@ class AdminController extends Controller
             return redirect()->back()->with(['create' => 1]);
         }
 
-        
+
     }
 
     public function personal(){
@@ -106,24 +135,25 @@ class AdminController extends Controller
         return view('administrador.personal', ['personal' => $personal]);
     }
 
-    public function crearPersonal(Request $request){
-        if($request->id != null && $request->id != ''){
+    public function crearPersonal(Request $request) {
+        if($request->id != null && $request->id != '') {
             unset($request->id);
             $personal = Personal::find($request->id);
             unset($request->id);
             $personal->update($request->all());
             return redirect()->back()->with(['edit' => 1]);
-        }else{
+        } else {
             unset($request->id);
             Personal::create($request->all());
             return redirect()->back()->with(['create' => 1]);
         }
-
     }
 
     public function ver_personal(Request $request){
         $personal = Personal::find($request->id);
-        return view('administrador.ver_personal', ['persona' => $personal]);
+        $usuario = User::with('roles')->where('identificacion', $personal->identificacion)->first();
+
+        return view('administrador.ver_personal', ['persona' => $personal, 'usuario' => $usuario]);
     }
 
     public function delete_personal(Request $request){
@@ -161,7 +191,7 @@ class AdminController extends Controller
 
     public function print_contrato(Request $request) {
         $contrato = Contratos_personal::with('personal')->find($request['id']);
-        
+
         return PDF::loadView('administrador.contrato', compact('contrato'))->setPaper('A4')->stream('certificado.pdf');
     }
 
@@ -179,7 +209,7 @@ class AdminController extends Controller
     public function editar_contrato(Request $request) {
         return Contratos_personal::find($request['id']);
     }
-    
+
     public function cargar_documentos(Request $request) {
         return Documentos_personal::where('tipo', $request['tipo'])->where('personal_id', $request['personal_id'])->get();
     }
@@ -208,7 +238,7 @@ class AdminController extends Controller
                 $nombre_completo_file_documento = $ruta_file_documento.$nombre_file_documento;
 
                 Storage::disk('public')->delete($documento->adjunto);
-                
+
                 $documento->update([
                     'adjunto' => $nombre_completo_file_documento
                 ]);

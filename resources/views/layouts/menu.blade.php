@@ -47,9 +47,15 @@
                         </ul>
                     </li> --}}
 
-                    @canany(['clientes', 'universal'])
+                    {{-- @canany(['clientes', 'universal']) --}}
+
+                    {{-- @endcanany --}}
+
+                    @unlessrole('cliente')
                         <li class="{{ Request::is('clientes/*') || Request::is('clientes') ? 'active' : '' }}"><a href="/clientes"><i class="icon-user"></i><span data-hover="Clientes">Clientes</span></a></li>
-                    @endcanany
+                    @else
+                        <li class="{{ Request::is('clientes/*') || Request::is('clientes') ? 'active' : '' }}"><a href="/clientes"><i class="icon-user"></i><span data-hover="Datos">Datos</span></a></li>
+                    @endunlessrole
 
                     @canany(['demandados', 'universal'])
                         {{-- <li class="{{ Request::is('demandados/*') || Request::is('demandados') ? 'active' : '' }}"><a href="/demandados"><i class="icon-user-unfollow"></i><span data-hover="Demandados">Demandados</span></a></li> --}}
@@ -59,13 +65,14 @@
                         <li class="{{ Request::is('consultas/*') || Request::is('consultas') ? 'active' : '' }}"><a href="/consultas"><i class="icon-envelope-open"></i><span data-hover="Consultas">Consultas</span></a></li>
                     @endcanany
 
-                    <li class="{{ Request::is('calendario/*') || Request::is('calendario') ? 'active' : '' }}"><a href="/calendario"><i class="icon-calendar"></i><span data-hover="Calendario">Calendario</span></a></li>
+                    @unlessrole('cliente')
+                        <li class="{{ Request::is('calendario/*') || Request::is('calendario') ? 'active' : '' }}"><a href="/calendario"><i class="icon-calendar"></i><span data-hover="Calendario">Calendario</span></a></li>
+                    @endunlessrole
 
                     @role('admin')
                     <li class="g_heading mb-2">Administrador</li>
 
-                    <li class="{{ Request::is('administrador/usuarios/*') || Request::is('administrador/usuarios') ? 'active' : '' }}"><a href="/administrador/usuarios"><i class="icon-users"></i><span data-hover="Usuarios">Usuarios</span></a></li>
-                    @endrole
+                    {{-- <li class="{{ Request::is('administrador/usuarios/*') || Request::is('administrador/usuarios') ? 'active' : '' }}"><a href="/administrador/usuarios"><i class="icon-users"></i><span data-hover="Usuarios">Usuarios</span></a></li> --}}
 
                     <li><a href=""><i class="fa fa-building-o"></i><span class="mr-1" data-hover="Administracion">Administración</span><i class="fa fa-angle-double-down ml-5"></i></a>
                         <ul class="sub-menu {{ Request::is('administrador/documentacion_legal') ? 'collapse in' : '' }}{{ Request::is('administrador/personal') ? 'collapse in' : '' }}{{ Request::is('administrador/personal/*') ? 'collapse in' : '' }}" aria-expanded="{{ Request::is('administrador/documentacion_legal') ? 'true' : 'false' }}{{ Request::is('administrador/personal') ? 'true' : 'false' }}{{ Request::is('administrador/personal/*') ? 'true' : 'false' }}">
@@ -73,6 +80,7 @@
                             <li class="{{ Request::is('administrador/personal') ? 'active' : '' }}{{ Request::is('administrador/personal/*') ? 'active' : '' }}"><a href="{{route('personal')}}"><i class="icon-users"></i><span data-hover="Personal">Personal</span></a></li>
                         </ul>
                     </li>
+                    @endrole
 
                 </ul>
             </nav>

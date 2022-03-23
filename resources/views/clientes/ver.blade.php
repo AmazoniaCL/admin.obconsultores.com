@@ -25,6 +25,18 @@
             </div>
         @endif
 
+        @if (session()->has('mostrar_alerta') && session('mostrar_alerta') == 1)
+            <div class="alert alert-{{ session('tipo') }}" role="alert">
+                <strong>{{ session('mensaje') }}</strong>
+            </div>
+        @endif
+
+        @if (session()->has('creado') && session('creado') == 1)
+            <div class="alert alert-icon alert-{{ session('tipo') }} col-12" id="alert" role="alert">
+                <i class="fe fe-check mr-2" aria-hidden="true"></i> {{ session('mensaje') }}
+            </div>
+        @endif
+
         <div class="row clearfix">
             <div class="col-md-12">
                 <div class="card">
@@ -39,12 +51,12 @@
 
                             <div class="form-group">
                                 <label for="asunto" class="form-label">Asunto</label>
-                                <textarea name="asunto" id="asunto" rows="3" placeholder="Escriba el asunto" class="form-control mb-2"></textarea>
+                                <textarea name="asunto" id="asunto" rows="3" placeholder="Escriba el asunto" class="form-control mb-2" required></textarea>
                             </div>
 
                             <label class="form-label">Mensaje</label>
 
-                            <input type="hidden" name="mensaje" id="mensaje" />
+                            <input type="hidden" name="mensaje" id="mensaje" required/>
 
                             <div class="summernote"></div>
 
@@ -69,6 +81,70 @@
             </div>
         </div>
 
+        {{-- {{ dd($usuario) }} --}}
+
+        <div class="card p-5 collapse" id="agg_usuario" style="border: solid 1px #cda854;background: #e9ecef !important;">
+            <button type="button" class="close position-absolute" style="width: fit-content;right: 1%;top: 1%;" aria-label="Close" onclick="ocultar_collapse('#agg_usuario')">
+            </button>
+            <h3 class="card-title" id="title_agg_usuario">Agregar Usuario</h3>
+            <form action="/administrador/usuarios/create" id="form_agg_usuario" method="post" enctype="multipart/form-data">
+                @csrf
+
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label">Identificacion</label>
+                            <input type="number" class="form-control" value="{{$cliente->identificacion}}" name="identificacion" id="identificacion" placeholder="Escriba la identificacion" required >
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="name" value="{{$cliente->nombre}}" id="name" placeholder="Escriba el nombre" required >
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label">Correo</label>
+                            <input type="text" class="form-control" value="{{$cliente->correo}}" name="email" id="email" placeholder="Escriba el correo" >
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" name="password" placeholder="Escriba la contraseña" {{($usuario && !$usuario->password) ? 'required' : ''}} >
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="form-label">Rol</label>
+                            <select name="rol" id="rol" class="form-control" required>
+                                <option value="">Seleccione el rol</option>
+                                {{-- <option value="admin" {{ ($usuario && $usuario->roles[0]->name == "admin" )? 'selected' : ''}}>Administrador</option> --}}
+                                {{-- <option value="general" {{ ($usuario && $usuario->roles[0]->name == "general") ? 'selected' : ''}}>General</option> --}}
+                                <option value="cliente" {{ ($usuario && $usuario->roles[0]->name == "cliente") ? 'selected' : ''}}>Cliente</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="form-label">Estado</label>
+                            <select name="estado" id="estado" class="form-control" required>
+                                <option value="">Seleccione el estado</option>
+                                <option value="Activo" {{ ($usuario && $usuario->estado == "Activo") ? 'selected' : ''}}>Activo</option>
+                                <option value="Inactivo" {{ ($usuario && $usuario->estado == "Inactivo") ? 'selected' : ''}}>Inactivo</option>
+                            </select>
+                        </div>
+                        {{-- <div class="form-group multiselect_div col-6">
+                            <label class="form-label">Permisos</label>
+                            <select id="multiselect2" name="permisos[]" class="multiselect multiselect-custom" multiple="multiple" required>
+                                @foreach (\Spatie\Permission\Models\Permission::all() as $permiso)
+                                    <option value="{{ $permiso->name }}">{{ $permiso->name }}</option>
+                                @endforeach
+                            </select>
+                        </div> --}}
+                    </div>
+
+                    <input type="hidden" name="id" value="{{ ($usuario) ? $usuario->id : '' }}">
+                    <button type="submit" class="btn btn-primary btn-lg text-center"  id="btn_agg_usuario">Agregar Usuario</button>
+            </form>
+        </div>
+
+
+
         <div class="card">
 
             <form action="/clientes/update" method="POST" id="form_update_cliente" style="display: contents" enctype="multipart/form-data">
@@ -78,12 +154,15 @@
 
                 <div class="card-header">
                     <h3 class="card-title">Cliente {{ $cliente->nombre }} </h3>
-                    <div class="card-options">
-                        <button type="button" class="btn btn-primary mr-2" onclick="habilitar_formularo_correo()"><i class="fa fa-envelope mr-2"></i> Enviar correo </button>
-                        <button type="button" class="btn btn-primary" id="btn_habilitar_actualizar_cliente" onclick="habilitar_formularo_cliente()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
-                        <button type="submit" class="btn text-white bg-green d-none" id="btn_enviar_actualizar_cliente"><i class="fe fe-check mr-2"></i> Enviar </button>
-                        <button type="button" class="btn text-white bg-red ml-1 d-none" id="btn_cancelar_actualizar_cliente" onclick="deshabilitar_formularo_cliente()"><i class="fa fa-times"></i>  </button>
-                    </div>
+                    @role('admin')
+                        <div class="card-options">
+                            <button type="button" class="btn btn-primary mr-2" data-toggle="collapse" data-target="#agg_usuario" aria-expanded="false"> Asignar contraseña </button>
+                            <button type="button" class="btn btn-primary mr-2" onclick="habilitar_formularo_correo()"><i class="fa fa-envelope mr-2"></i> Enviar correo </button>
+                            <button type="button" class="btn btn-primary" id="btn_habilitar_actualizar_cliente" onclick="habilitar_formularo_cliente()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
+                            <button type="submit" class="btn text-white bg-green d-none" id="btn_enviar_actualizar_cliente"><i class="fe fe-check mr-2"></i> Enviar </button>
+                            <button type="button" class="btn text-white bg-red ml-1 d-none" id="btn_cancelar_actualizar_cliente" onclick="deshabilitar_formularo_cliente()"><i class="fa fa-times"></i>  </button>
+                        </div>
+                    @endrole
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -397,6 +476,9 @@
                         <h3 class="card-title">Procesos </h3>
                         <div class="card-options">
                             <a href="/procesos/crear?cliente={{ $cliente->identificacion }}" class="btn text-white bg-primary"><i class="fe fe-plus mr-2"></i> Agregar Proceso</a>
+                            @role('cliente')
+                                <a href="/procesos/crear-consulta?cliente={{ $cliente->identificacion }}" class="btn text-white bg-primary"><i class="fe fe-plus mr-2"></i> Solicitar consulta</a>
+                            @endrole
                         </div>
                     </div>
                     <div class="card-body">
@@ -427,6 +509,14 @@
                                         <td>{{ $proceso->juez ?? 'N/A' }}</td>
                                         <td>
                                             <a href="/procesos/ver/{{ $proceso->id }}"><button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button></a>
+
+                                            @role('admin')
+                                                <a href="javascript:confirmarDelete('/procesos/eliminar/{{ $proceso->id }}')"><button type="button" class="btn btn-danger btn-sm" title="Eliminar"><i class="fa fa-trash"></i></button></a>
+                                            @else
+                                                @if ($proceso->users_id == auth()->user()->id)
+                                                    <a href="javascript:confirmarDelete('/procesos/eliminar/{{ $proceso->id }}')"><button type="button" class="btn btn-danger btn-sm" title="Eliminar"><i class="fa fa-trash"></i></button></a>
+                                                @endif
+                                            @endrole
                                         </td>
 
                                     </tr>

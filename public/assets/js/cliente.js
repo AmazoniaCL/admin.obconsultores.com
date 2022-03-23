@@ -85,7 +85,7 @@ function deshabilitar_formularo_cliente() {
 
     $('#section_poder').removeClass('d-none');
     $('#input_poder').addClass('d-none');
-    
+
     $('#section_titulo_valor').removeClass('d-none');
     $('#input_titulo_valor').addClass('d-none');
 
@@ -148,5 +148,11 @@ function select_tipo_persona(tipo) {
         $('#verificacion').addClass('d-none');
         $('#section_representante').addClass('d-none');
         $('#section_representante_hr').addClass('d-none');
+    }
+}
+
+function confirmarDelete(url) {
+    if(confirm('¿Seguro desea eliminar el registro?')) {
+        window.location.href = url;
     }
 }

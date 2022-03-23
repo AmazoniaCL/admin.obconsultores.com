@@ -23,11 +23,13 @@ Route::get('/chat/mensajes/{id}', 'ChatController@mensajes');
 Route::post('/chat/mensajes/enviar', 'ChatController@enviar');
 
 // Rutas para crear procesos
+Route::get('/procesos/crear', 'ProcesosController@crear')->name('crear-proceso');
+Route::post('/procesos/create', 'ProcesosController@create');
+Route::get('/procesos/searh/{id}', 'ProcesosController@search');
+Route::get('/procesos/ver/{id}', 'ProcesosController@ver')->name('ver-proceso');
+Route::get('/procesos/eliminar/{id}', 'ProcesosController@delete');
+
 Route::group(['middleware' => ['permission:penal|civil|familia|laboral|seguridad social|administrativo|universal']], function () {
-    Route::get('/procesos/crear', 'ProcesosController@crear')->name('crear-proceso');
-    Route::post('/procesos/create', 'ProcesosController@create');
-    Route::get('/procesos/searh/{id}', 'ProcesosController@search');
-    Route::get('/procesos/ver/{id}', 'ProcesosController@ver')->name('ver-proceso');
     Route::post('/procesos/agregar_actuacion', 'ProcesosController@agregar_actuacion');
     Route::get('/buscar/{buscar}', 'ProcesosController@buscar');
     Route::get('/buscar', 'ProcesosController@buscar_view');
@@ -87,9 +89,10 @@ Route::group(['middleware' => ['permission:penal|universal']], function () {
 });
 
 // Rutas para Clientes
+Route::get('/clientes', 'ClientesController@index')->name('clientes')->middleware('cliente');
+Route::get('/clientes/ver/{id}', 'ClientesController@ver')->name('ver-cliente');
+
 Route::group(['middleware' => ['permission:clientes|universal']], function () {
-    Route::get('/clientes', 'ClientesController@index')->name('clientes');
-    Route::get('/clientes/ver/{id}', 'ClientesController@ver')->name('ver-cliente');
     Route::get('/clientes/crear', 'ClientesController@crear');
     Route::post('/clientes/create', 'ClientesController@create');
     Route::post('/clientes/update', 'ClientesController@update');
@@ -147,3 +150,5 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/administrador/personal/ver/{id}', 'AdminController@ver_personal')->name('ver_personal');
     Route::post('/administrador/delete_personal', 'AdminController@delete_personal')->name('delete_personal');
 });
+
+Route::get('/testjob', 'ProcesosController@testjob');

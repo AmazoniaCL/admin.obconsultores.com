@@ -9,7 +9,7 @@ class Actuacion extends Model
     protected $table = 'actuaciones';
 
     protected $fillable = [
-        'id', 'fecha', 'actuacion', 'anotacion', 'f_inicio_termino', 'f_fin_termino', 'anotacion_file', 'procesos_id'
+        'id', 'fecha', 'actuacion', 'anotacion', 'f_inicio_termino', 'f_fin_termino', 'anotacion_file', 'idsincronizacion', 'procesos_id'
     ];
 
     public function procesos() {

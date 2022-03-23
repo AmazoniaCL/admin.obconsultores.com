@@ -19,9 +19,11 @@
 
         <a href="/clientes/ver/{{ $proceso[0]->clientes_id }}"><button type="button" class="btn btn-primary mb-2"><i class="fa fa-arrow-circle-left mr-2"></i> Atras </button></a>
 
-        <a href="/procesos/generar_informe/{{ $proceso[0]->id }}" target="_blank" class="float-right"><button type="button" class="btn btn-primary mb-2 ml-2"><i class="fa fa-print mr-2"></i> Generar informe </button></a>
+        @hasanyrole('admin|general')
+            <a href="/procesos/generar_informe/{{ $proceso[0]->id }}" target="_blank" class="float-right"><button type="button" class="btn btn-primary mb-2 ml-2"><i class="fa fa-print mr-2"></i> Generar informe </button></a>
+            <a href="https://procesos.ramajudicial.gov.co/procesoscs/ConsultaJusticias21.aspx?EntryId=grBcWxPg0ZUShlbwdwhIP3U6ZKQ%3d" target="_blank" class="float-right"><button type="button" class="btn btn-primary mb-2 ml-2"><i class="fa fa-bank ml-2"></i> Rama Judicial </button></a>
+        @endhasanyrole
 
-        <a href="https://procesos.ramajudicial.gov.co/procesoscs/ConsultaJusticias21.aspx?EntryId=grBcWxPg0ZUShlbwdwhIP3U6ZKQ%3d" target="_blank" class="float-right"><button type="button" class="btn btn-primary mb-2 ml-2"><i class="fa fa-bank ml-2"></i> Rama Judicial </button></a>
 
         @if ($proceso[0]->users_id == auth()->user()->id || auth()->user()->hasRole('admin'))
             <a href="/procesos/ver/acceso/{{ $proceso[0]->id }}" class="btn btn-primary mb-2 float-right"><i class="fa fa-lock mr-2"></i> Acceso </a>
@@ -216,9 +218,11 @@
 
                         <a href="#" class="card-options-collapse mr-3" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
 
-                        <button type="button" class="btn btn-primary btn-sm" id="btn_habilitar_actualizar_proceso" onclick="habilitar_formularo_proceso()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
-                        <button type="submit" class="btn text-white btn-sm bg-green d-none" id="btn_enviar_actualizar_proceso"><i class="fe fe-check mr-2"></i> Enviar </button>
-                        <button type="button" class="btn text-white btn-sm bg-red ml-1 d-none" id="btn_cancelar_actualizar_proceso" onclick="deshabilitar_formularo_proceso()"><i class="fa fa-times"></i>  </button>
+                        @hasanyrole('admin|general')
+                            <button type="button" class="btn btn-primary btn-sm" id="btn_habilitar_actualizar_proceso" onclick="habilitar_formularo_proceso()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
+                            <button type="submit" class="btn text-white btn-sm bg-green d-none" id="btn_enviar_actualizar_proceso"><i class="fe fe-check mr-2"></i> Enviar </button>
+                            <button type="button" class="btn text-white btn-sm bg-red ml-1 d-none" id="btn_cancelar_actualizar_proceso" onclick="deshabilitar_formularo_proceso()"><i class="fa fa-times"></i>  </button>
+                        @endhasanyrole
                     </div>
                 </div>
                 <div class="card-body">
@@ -549,9 +553,11 @@
 
                         <a href="#" class="card-options-collapse mr-3" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
 
-                        <button type="button" class="btn btn-primary btn-sm" id="btn_habilitar_actualizar_juzgado" onclick="habilitar_formularo_juzgado()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
-                        <button type="submit" class="btn text-white btn-sm bg-green d-none" id="btn_enviar_actualizar_juzgado"><i class="fe fe-check mr-2"></i> Enviar </button>
-                        <button type="button" class="btn text-white btn-sm bg-red ml-1 d-none" id="btn_cancelar_actualizar_juzgado" onclick="deshabilitar_formularo_juzgado()"><i class="fa fa-times"></i>  </button>
+                        @hasanyrole('admin|general')
+                            <button type="button" class="btn btn-primary btn-sm" id="btn_habilitar_actualizar_juzgado" onclick="habilitar_formularo_juzgado()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
+                            <button type="submit" class="btn text-white btn-sm bg-green d-none" id="btn_enviar_actualizar_juzgado"><i class="fe fe-check mr-2"></i> Enviar </button>
+                            <button type="button" class="btn text-white btn-sm bg-red ml-1 d-none" id="btn_cancelar_actualizar_juzgado" onclick="deshabilitar_formularo_juzgado()"><i class="fa fa-times"></i>  </button>
+                        @endhasanyrole
                     </div>
                 </div>
                 <div class="card-body">
@@ -615,7 +621,9 @@
 
                     <a href="#" class="card-options-collapse mr-3" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
 
-                    <button type="button" class="btn btn-primary btn-sm" onclick="agg_demandante()" data-toggle="collapse" data-target="#agg_demandante" aria-expanded="false" aria-controls="agg_demandante"><i class="fe fe-plus mr-2"></i> Agregar </button>
+                    @hasanyrole('admin|general')
+                        <button type="button" class="btn btn-primary btn-sm" onclick="agg_demandante()" data-toggle="collapse" data-target="#agg_demandante" aria-expanded="false" aria-controls="agg_demandante"><i class="fe fe-plus mr-2"></i> Agregar </button>
+                    @endhasanyrole
 
                 </div>
             </div>
@@ -781,7 +789,9 @@
 
                     <a href="#" class="card-options-collapse mr-3" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
 
-                    <button type="button" class="btn btn-primary btn-sm" onclick="agg_demandado()" data-toggle="collapse" data-target="#agg_demandado" aria-expanded="false" aria-controls="agg_demandado"><i class="fe fe-plus mr-2"></i> Agregar </button>
+                    @hasanyrole('admin|general')
+                        <button type="button" class="btn btn-primary btn-sm" onclick="agg_demandado()" data-toggle="collapse" data-target="#agg_demandado" aria-expanded="false" aria-controls="agg_demandado"><i class="fe fe-plus mr-2"></i> Agregar </button>
+                    @endhasanyrole
 
                 </div>
             </div>
@@ -961,14 +971,23 @@
                     <div class="card-header">
                         <h3 class="card-title">Actuaciones </h3>
                         <div class="card-options">
+
                             @if (isset($proxima_audiencia))
-                            <h4 class="mr-3">Proxima Audiencia en: {{ ($proxima_audiencia == 'Hoy') ? 'Hoy' : $proxima_audiencia.' Dias' }} </h4>
-                            <button type="button" onclick="editar_audiencia({{ $audiencias[0]->id ?? '' }}, '{{ $audiencias[0]->fecha ?? '' }}', '{{ $audiencias[0]->observaciones ?? '' }}')" class="btn btn-primary btn-sm mr-2"><i class="fe fe-edit"></i></button>
+                                <h4 class="mr-3">Proxima Audiencia en: {{ ($proxima_audiencia == 'Hoy') ? 'Hoy' : $proxima_audiencia.' Dias' }} </h4>
+                                @hasanyrole('admin|general')
+                                    <button type="button" onclick="editar_audiencia({{ $audiencias[0]->id ?? '' }}, '{{ $audiencias[0]->fecha ?? '' }}', '{{ $audiencias[0]->observaciones ?? '' }}')" class="btn btn-primary btn-sm mr-2"><i class="fe fe-edit"></i></button>
+                                @endhasanyrole
+
                             @else
-                                <button type="button" onclick="agregar_audiencia()" data-toggle="collapse" data-target="#agg_audiencia" aria-expanded="false" aria-controls="agg_audiencia" class="btn btn-primary btn-sm mr-2">Agregar audiencia</button>
+                                @hasanyrole('admin|general')
+                                    <button type="button" onclick="agregar_audiencia()" data-toggle="collapse" data-target="#agg_audiencia" aria-expanded="false" aria-controls="agg_audiencia" class="btn btn-primary btn-sm mr-2">Agregar audiencia</button>
+                                @endhasanyrole
                             @endif
 
-                            <button type="button" data-toggle="collapse" data-target="#agg_actuacion" aria-expanded="false" aria-controls="agg_actuacion" class="btn btn-primary btn-sm">Agregar +</button>
+                            @hasanyrole('admin|general')
+                                <button type="button" data-toggle="collapse" data-target="#agg_actuacion" aria-expanded="false" aria-controls="agg_actuacion" class="btn btn-primary btn-sm">Agregar +</button>
+                            @endhasanyrole
+
                         </div>
                     </div>
                     <div class="card-body table-responsive">
@@ -1049,6 +1068,7 @@
                                     <th>Anotación</th>
                                     <th>Fecha Inicio Termino</th>
                                     <th>Fecha Fin Termino</th>
+                                    <th>Tipo</th>
                                     <th>Archivo</th>
                                 </tr>
                             </thead>
@@ -1062,17 +1082,22 @@
                                             <td>{{ $actuacion->anotacion ?? 'No aplica' }}</td>
                                             <td>{{ $actuacion->f_inicio_termino ?? 'No aplica' }}</td>
                                             <td>{{ $actuacion->f_fin_termino ?? 'No aplica' }}</td>
+                                            <td>{{ $actuacion->idsincronizacion ? 'Sincronizado' : 'Manual' }}</td>
                                             <td class="text-center">
                                                 @if($actuacion->anotaciones)
                                                     @foreach ($actuacion->anotaciones as $anotacion)
                                                         <a href="http://admin.obconsultores.com/storage/{{ $anotacion->anotacion_file }}" title="{{$anotacion->anotacion_file}}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
-                                                        
                                                     @endforeach
                                                 @else
                                                     <a href="http://admin.obconsultores.com/storage/{{ $actuacion->anotacion_file }}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
                                                 @endif
-                                                <a href="javascript:;" onclick="update_actuacion({{ $actuacion->id }})" class="ml-2 text-dark h5"><i class="fa fa-pencil"></i></a>
-                                                <a href="javascript:;" onclick="eliminar_actuacion({{ $actuacion->id }})" class="ml-2 text-red h5"><i class="fa fa-close"></i></a>
+
+                                                @hasanyrole('admin|general')
+                                                    @if (!$actuacion->idsincronizacion)
+                                                        <a href="javascript:;" onclick="update_actuacion({{ $actuacion->id }})" class="ml-2 text-dark h5"><i class="fa fa-pencil"></i></a>
+                                                        <a href="javascript:;" onclick="eliminar_actuacion({{ $actuacion->id }})" class="ml-2 text-red h5"><i class="fa fa-close"></i></a>
+                                                    @endif
+                                                @endhasanyrole
                                             </td>
                                         </tr>
                                     @endforeach

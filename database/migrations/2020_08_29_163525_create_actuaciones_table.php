@@ -22,6 +22,7 @@ class CreateActuacionesTable extends Migration
             $table->date('f_inicio_termino')->nullable();
             $table->date('f_fin_termino')->nullable();
             $table->string('anotacion_file')->nullable();
+            $table->bigInteger('idsincronizacion')->nullable();
 
             $table->foreignId('procesos_id')
                 ->constrained()

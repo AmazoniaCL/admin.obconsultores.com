@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}"/>
 @endsection
 
-@section('myScripts') 
-    <script src="{{ asset('assets/js/administracion.js') }}"></script> 
+@section('myScripts')
+    <script src="{{ asset('assets/js/administracion.js') }}"></script>
     <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 @endsection
 
@@ -41,7 +41,7 @@
                             <label class="form-label">Numero de Identificacion</label>
                             <input name="identificacion" autocomplete="off" id="identificacion" class="form-control" placeholder="Nº Identificación" required type="number">
                         </div>
-                        
+
                         <div class="form-group col-3">
                             <label class="form-label">Nombres</label>
                             <input name="nombres" id="nombres" class="form-control" placeholder="Nombres" required type="text">
@@ -57,14 +57,14 @@
 
                         <div class="form-group col-3">
                             <label class="form-label">Segundo Apellido</label>
-                            <input name="segundo_apellido" id="segundo_apellido" class="form-control" placeholder="Segundo Apellido" required type="text">
+                            <input name="segundo_apellido" id="segundo_apellido" class="form-control" placeholder="Segundo Apellido" type="text">
                         </div>
 
                         <div class="form-group col-3">
                             <label class="form-label">Fecha Ingreso</label>
                             <input data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-autoclose="true" name="fecha_ingreso" id="fecha" class="form-control" placeholder="MM/DD/AAAA" required="" autocomplete="off">
                         </div>
-                        
+
                         <div class="form-group col-3">
                             <label class="form-label">Direccion</label>
                             <input name="direccion" id="direccion" class="form-control" placeholder="Direccion" required type="text">
@@ -120,7 +120,7 @@
                         </div>
                         <div class="form-group col-6">
                             <label class="form-label">Tarjeta Profesional</label>
-                            <input type="text"t name="tarjetaprofesional" id="tarjetaprofesional" class="form-control" placeholder="Tarjeta Profesional" required >
+                            <input type="text"t name="tarjetaprofesional" id="tarjetaprofesional" class="form-control" placeholder="Tarjeta Profesional" >
                         </div>
                     </div>
 
@@ -199,7 +199,7 @@
                                     </td>
                                 </tr>
                             @endforeach
-                            
+
                         </tbody>
                     </table>
                     {{ $personal->links() }}

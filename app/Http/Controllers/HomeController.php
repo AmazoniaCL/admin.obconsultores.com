@@ -17,6 +17,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('cliente');
         $this->date = Carbon::now()->format('Y-m-d');
     }
 

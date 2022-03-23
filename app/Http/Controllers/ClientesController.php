@@ -10,6 +10,8 @@ use App\Models\Mensajes_cliente;
 use Illuminate\Http\Request;
 use App\Mail\MensajeCliente;
 use App\Models\Cliente;
+use App\Models\Personal;
+use App\User;
 use Carbon\Carbon;
 
 class ClientesController extends Controller
@@ -62,7 +64,10 @@ class ClientesController extends Controller
             }
         }
 
-        return view('clientes.ver', ['cliente' => $cliente, 'procesos' => $procesos]);
+        $personal = Personal::find($request->id);
+        $usuario = User::with('roles')->where('identificacion', $cliente->identificacion)->first();
+
+        return view('clientes.ver', ['cliente' => $cliente, 'procesos' => $procesos, 'usuario' => $usuario]);
     }
 
     public function search_proceso(Request $request) {
@@ -297,7 +302,6 @@ class ClientesController extends Controller
 
         return redirect()->back()->with(['mensaje_enviado' => 1]);
     }
-
 
     public function callAction($method, $parameters)
     {

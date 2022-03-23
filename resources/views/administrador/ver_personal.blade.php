@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}"/>
 @endsection
 
-@section('myScripts') 
+@section('myScripts')
     <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/js/administracion.js') }}"></script> 
-    <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script> 
-    <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script> 
+    <script src="{{ asset('assets/js/administracion.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
+    <script src="{{ asset('assets/plugins/multi-select/js/jquery.multi-select.js') }}"></script>
     <script>$('#multiselect2').multiselect({ maxHeight: 500 });</script>
 @endsection
 
@@ -47,7 +47,7 @@
                         </div>
                         <div class="form-group col-6">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" name="password"  placeholder="Escriba la contraseña" required >
+                            <input type="password" class="form-control" name="password" placeholder="Escriba la contraseña" {{!$usuario->password ? 'required' : ''}} >
                         </div>
                     </div>
                     <div class="row">
@@ -55,24 +55,31 @@
                             <label class="form-label">Rol</label>
                             <select name="rol" id="rol" class="form-control" required>
                                 <option value="">Seleccione el rol</option>
-                                <option value="admin">Administrador</option>
-                                <option value="general">General</option>
+                                <option value="admin" {{$usuario->roles[0]->name == "admin" ? 'selected' : ''}}>Administrador</option>
+                                <option value="general" {{$usuario->roles[0]->name == "general" ? 'selected' : ''}}>General</option>
+                                <option value="cliente" {{$usuario->roles[0]->name == "cliente" ? 'selected' : ''}}>Cliente</option>
                             </select>
                         </div>
-                        <div class="form-group multiselect_div col-6">
+                        <div class="form-group col-6">
+                            <label class="form-label">Estado</label>
+                            <select name="estado" id="estado" class="form-control" required>
+                                <option value="">Seleccione el estado</option>
+                                <option value="Activo" {{$usuario->estado == "Activo" ? 'selected' : ''}}>Activo</option>
+                                <option value="Inactivo" {{$usuario->estado == "Inactivo" ? 'selected' : ''}}>Inactivo</option>
+                            </select>
+                        </div>
+                        {{-- <div class="form-group multiselect_div col-6">
                             <label class="form-label">Permisos</label>
                             <select id="multiselect2" name="permisos[]" class="multiselect multiselect-custom" multiple="multiple" required>
                                 @foreach (\Spatie\Permission\Models\Permission::all() as $permiso)
                                     <option value="{{ $permiso->name }}">{{ $permiso->name }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
                     </div>
 
-                    <input type="hidden" name="id" id="id_documento">
-
+                    <input type="hidden" name="id" value="{{ $usuario->id }}">
                     <button type="submit" class="btn btn-primary btn-lg text-center"  id="btn_agg_usuario">Agregar Usuario</button>
-
             </form>
         </div>
 
@@ -82,16 +89,16 @@
             <div class="card-header">
                 <h3 class="card-title">Personal {{$persona->nombres}}</h3>
                 <div class="card-options">
-                        <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#agg_usuario" aria-expanded="false"> Convertir en Usuario </button>
+                        <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#agg_usuario" aria-expanded="false"> Asignar contraseña </button>
                 </div>
             </div>
             <div class="card-body pt-0">
 
 
                 @if (session()->has('creado') && session('creado') == 1)
-                <div class="alert alert-icon alert-success col-12" id="alert" role="alert">
-                    <i class="fe fe-check mr-2" aria-hidden="true"></i> Usuario Creado
-                </div>
+                    <div class="alert alert-icon alert-{{ session('tipo') }} col-12" id="alert" role="alert">
+                        <i class="fe fe-check mr-2" aria-hidden="true"></i> {{ session('mensaje') }}
+                    </div>
                 @endif
 
                 <div class="table-responsive table_e2">
@@ -198,9 +205,9 @@
                     <h3 class="card-title" id="agg_title_documento"> </h3>
                     <form action="" id="form_agg_documento" method="POST" enctype="multipart/form-data">
                         @csrf
-    
+
                         <div class="container p-3">
-    
+
                             <div class="row">
                                 <div class="col-sm-6">
                                     <label for="tipo" id="consecutivo_title">Tipo Documento</label>
@@ -215,7 +222,7 @@
                                     </div>
                                 </div>
                             </div>
-    
+
                             <div class="row">
                                 <div class="col-sm-6 d-none" id="fecha_inicio_vigencia_div">
                                     <label for="fecha_inicio_vigencia">Fecha inicio de vigencia</label>
@@ -230,7 +237,7 @@
                                     </div>
                                 </div>
                             </div>
-    
+
                             <div class="row">
                                 <div class="col-sm-12">
                                     <label for="observaciones">Observaciones</label>
@@ -239,7 +246,7 @@
                                     </div>
                                 </div>
                             </div>
-    
+
                             <div class="row">
                                 <div class="col-sm-12">
                                     <label for="adjunto">Agregar Adjunto</label>
@@ -248,18 +255,18 @@
                                     </div>
                                 </div>
                             </div>
-    
+
                             <input type="hidden" name="id" id="id">
                             <input type="hidden" name="isfecha" id="isfecha">
                             <input type="hidden" name="id_table" id="id_table">
                             <input type="hidden" name="personal_id" value="{{ $persona->id }}">
-    
+
                         </div>
-    
+
                         <div class="mt-3 text-center">
                             <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Enviar</button>
                         </div>
-    
+
                     </form>
                 </div>
 
@@ -292,7 +299,7 @@
                                     </button>
                                     <form action="" id="form_agg_contrato" method="post">
                                         @csrf
-                        
+
                                         <div class="container p-4">
 
                                             <div class="row">
@@ -325,7 +332,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                    
+
                                             <div class="row">
                                                 <div class="col-sm-6 d-none" id="fecha_inicio_div">
                                                     <label for="fecha_inicio">Fecha inicio</label>
@@ -340,9 +347,9 @@
                                                     </div>
                                                 </div>
                                             </div>
-                    
+
                                             <hr>
-                    
+
                                             <div class="row d-none" id="clausulas_div">
                                                 <div class="col-sm-12">
                                                     <label for="clausulas_parte_uno">Clausulas parte uno</label>
@@ -358,14 +365,14 @@
                                                     </div>
                                                 </div>
                                             </div>
-                    
+
                                             <input type="hidden" name="personal_id" value="{{ $persona->id }}">
                                             <input type="hidden" name="contrato_id" id="contrato_id" >
-                    
+
                                         </div>
-                        
+
                                             <button type="submit" class="btn btn-primary btn-lg text-center"  id="btn_agg_contrato">Agregar Contrato</button>
-                        
+
                                     </form>
                                 </div>
 
@@ -374,9 +381,9 @@
                                     </button>
                                     <form action="" id="form_agg_otro_si" method="POST">
                                         @csrf
-                    
+
                                         <div class="container p-3">
-                    
+
                                             <div class="row">
                                                 <div class="col-sm-6">
                                                     <label for="fecha">Fecha</label>
@@ -385,9 +392,9 @@
                                                     </div>
                                                 </div>
                                             </div>
-                    
+
                                             <hr>
-                    
+
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <label for="descripcion">Clausulas parte uno</label>
@@ -396,15 +403,15 @@
                                                     </div>
                                                 </div>
                                             </div>
-                    
+
                                             <input type="hidden" name="contratos_personal_id" id="contratos_personal_id">
-                    
+
                                         </div>
-                    
+
                                         <div class="mt-3 text-center">
                                             <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Enviar</button>
                                         </div>
-                    
+
                                     </form>
                                 </div>
 
@@ -424,9 +431,9 @@
                                         <tr>
                                             <td colspan="7" class="text-center">
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                            </td> 
+                                            </td>
                                         </tr>
-                                        
+
                                     </tbody>
                                 </table>
                             </div>
