@@ -17,7 +17,7 @@ use Carbon\Carbon;
 class ClientesController extends Controller
 {
     public function index() {
-        $clientes = Cliente::with('procesos')->paginate(10);
+        $clientes = Cliente::with('procesos')->orderBy('nombre', 'ASC')->paginate(10);
 
         return view('clientes.index', ['clientes' => $clientes]);
     }
@@ -260,6 +260,7 @@ class ClientesController extends Controller
         }
 
         $cliente->update([
+            'tipo_cliente' => $request['tipo_cliente'],
             'identificacion' => $request['identificacion'],
             'nombre' => $request['nombre'],
             'direccion' => $request['direccion'],

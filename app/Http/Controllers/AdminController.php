@@ -7,6 +7,7 @@ use App\Models\Documentacion;
 use App\Models\Documentos_personal;
 use App\Models\Otro_si;
 use App\Models\Personal;
+use App\Models\Config_pagina;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -317,6 +318,40 @@ class AdminController extends Controller
         $documento->delete();
         return ['tipo' => $request['tipo'], 'personal_id' => $request['personal_id'], 'isfecha' => $request['isfecha']];
     }
+
+    public function pagina_web() {
+        $config = Config_pagina::first();
+        return view('administrador.pagina_web', ['config' => $config]);
+    }
+
+    public function pagina_web_update(Request $request) {
+        $config = Config_pagina::first();
+
+        if(!$config) {
+            Config_pagina::create([
+                'telefono' => $request['telefono'],
+                'direccion' => $request['direccion'],
+                'correo' => $request['correo'],
+                'facebook' => $request['facebook'],
+                'twitter' => $request['twitter'],
+                'instagram' => $request['instagram']
+            ]);
+
+            return redirect()->route('pagina-web')->with(['update' => 1]);
+        }
+
+        $config->update([
+            'telefono' => $request['telefono'],
+            'direccion' => $request['direccion'],
+            'correo' => $request['correo'],
+            'facebook' => $request['facebook'],
+            'twitter' => $request['twitter'],
+            'instagram' => $request['instagram']
+        ]);
+
+        return redirect()->route('pagina-web')->with(['update' => 1]);
+    }
+
     public function callAction($method, $parameters)
     {
         return parent::callAction($method, array_values($parameters));

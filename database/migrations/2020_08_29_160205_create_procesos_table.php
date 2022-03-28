@@ -36,6 +36,12 @@ class CreateProcesosTable extends Migration
             $table->bigInteger('telefono')->nullable();
             $table->string('correo')->nullable();
 
+            $table->string('fiscalia')->nullable();
+            $table->string('fiscal')->nullable();
+            $table->bigInteger('telefono_fiscal')->nullable();
+            $table->string('direccion_fiscal')->nullable();
+            $table->string('correo_fiscal')->nullable();
+
             $table->foreignId('clientes_id')
                 ->constrained()
                 ->onDelete('cascade');

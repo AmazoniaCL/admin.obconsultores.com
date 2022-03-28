@@ -15,6 +15,7 @@ use Illuminate\Notifications\Action;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SincronizarActuaciones implements ShouldQueue
 {
@@ -38,19 +39,21 @@ class SincronizarActuaciones implements ShouldQueue
         $procesos = Proceso::whereNotNull('radicado')->get();
         $nuevos = [];
 
+        Log::info("Job executing");
+
         foreach ($procesos as $proceso) {
             if(strlen((string) $proceso->radicado) != 23) continue;
 
             $ResponseProceso = Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
             $DataProceso = json_decode($ResponseProceso, true);
 
-            if(is_array($DataProceso['procesos'])) {
+            if(isset($DataProceso['procesos']) && is_array($DataProceso['procesos'])) {
                 $ResponseActuaciones =  Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $DataProceso['procesos'][0]['idProceso'] . '?pagina=1');
                 $DataActuaciones = json_decode($ResponseActuaciones, true);
 
                 // dd($DataActuaciones);
 
-                if(is_array($DataActuaciones['actuaciones'])) {
+                if(isset($DataActuaciones['actuaciones']) && is_array($DataActuaciones['actuaciones'])) {
                     foreach ($DataActuaciones['actuaciones'] as $actuacion) {
                         // consultar si ya se sincronizo la actuacion
                         $SearchActuacion = Actuacion::where('idsincronizacion', $actuacion['idRegActuacion'])->exists();
@@ -101,6 +104,8 @@ class SincronizarActuaciones implements ShouldQueue
             }
 
         }
+
+        dd($nuevos);
 
         // if (count($nuevos)) {
         //     Mail::send(array(), array(), function ($message) {

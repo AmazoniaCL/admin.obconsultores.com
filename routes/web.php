@@ -46,8 +46,11 @@ Route::group(['middleware' => ['permission:penal|civil|familia|laboral|seguridad
     Route::post('/procesos/agregar_demandado', 'ProcesosController@agregar_demandado');
     Route::post('/procesos/searh/detalle_proceso', 'ProcesosController@detalle_proceso');
     Route::post('/procesos/delete/detalle_proceso', 'ProcesosController@delete_detalle_proceso');
+    Route::post('/procesos/searh/audiencia', 'ProcesosController@detalle_audiencia');
+    Route::post('/procesos/delete/audiencia', 'ProcesosController@delete_detalle_audiencia');
     Route::get('/procesos/generar_informe/{id}', 'ProcesosController@generar_informe');
     Route::post('/procesos/juzgado', 'ProcesosController@juzgado');
+    Route::post('/procesos/fiscalia', 'ProcesosController@fiscalia');
     Route::get('/procesos/ver/acceso/{id}', 'ProcesosController@acceso');
     Route::post('/procesos/agregar_acceso', 'ProcesosController@agregar_acceso');
     Route::post('/procesos/delete_acceso', 'ProcesosController@delete_acceso');
@@ -149,6 +152,8 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::post('/administrador/cargar_documentos', 'AdminController@cargar_documentos');
     Route::get('/administrador/personal/ver/{id}', 'AdminController@ver_personal')->name('ver_personal');
     Route::post('/administrador/delete_personal', 'AdminController@delete_personal')->name('delete_personal');
+    Route::get('/administrador/pagina-web', 'AdminController@pagina_web')->name('pagina-web');
+    Route::post('/administrador/pagina-web', 'AdminController@pagina_web_update');
 });
 
 Route::get('/testjob', 'ProcesosController@testjob');

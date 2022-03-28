@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\DemoCron;
 use App\Jobs\SincronizarActuaciones;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -14,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        DemoCron::class
     ];
 
     /**
@@ -25,8 +26,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->job(new SincronizarActuaciones)->daily();
+        $schedule->command('demo:cron')->everyMinute();
+        // $schedule->job(new SincronizarActuaciones)->daily();
     }
 
     /**

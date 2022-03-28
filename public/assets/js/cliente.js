@@ -39,6 +39,8 @@ function habilitar_formularo_cliente() {
     $('#contrato').prop("disabled", false);
     $('#poder').prop("disabled", false);
     $('#titulo_valor').prop("disabled", false);
+    $('#tipo_cliente').prop("disabled", false);
+    $('#verificacion').prop("readonly", false);
 
     $('#section_cedula').addClass('d-none');
     $('#input_cedula').removeClass('d-none');
@@ -76,6 +78,8 @@ function deshabilitar_formularo_cliente() {
     $('#contrato').prop("disabled", true);
     $('#poder').prop("disabled", true);
     $('#titulo_valor').prop("disabled", true);
+    $('#tipo_cliente').prop("disabled", true);
+    $('#verificacion').prop("readonly", true);
 
     $('#section_cedula').removeClass('d-none');
     $('#input_cedula').addClass('d-none');

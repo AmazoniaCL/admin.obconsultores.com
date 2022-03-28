@@ -173,7 +173,18 @@
                             </div>
                         @endif
 
-                        <div class="{{ $cliente->tipo_cliente == 'Juridica' ? 'col-md-5' : 'col-md-6' }}">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Tipo persona</label>
+                                <select name="tipo_cliente" id="tipo_cliente" onchange="select_tipo_persona(this.value)" class="form-control" disabled required>
+                                    <option value="">Seleccione</option>
+                                    <option {{ $cliente->tipo_cliente == 'Natural' ? 'selected' : '' }} value="Natural">Natural</option>
+                                    <option {{ $cliente->tipo_cliente == 'Juridica' ? 'selected' : '' }} value="Juridica">Juridica</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="{{ $cliente->tipo_cliente == 'Juridica' ? 'col-md-5' : 'col-md-5' }}">
                             <div class="form-group">
                                 <label class="form-label">{{ $cliente->tipo_cliente == 'Juridica' ? 'Nit.' : 'Identificación' }}</label>
                                 <input type="number" class="form-control" name="identificacion" id="identificacion" required readonly value="{{ $cliente->identificacion }}">
@@ -187,7 +198,7 @@
                                 </div>
                             </div>
                         @endif
-                        <div class="col-sm-6 col-md-6">
+                        <div class="{{ $cliente->tipo_cliente == 'Juridica' ? 'col-md-4' : 'col-md-5' }}">
                             <div class="form-group">
                                 <label class="form-label">Nombre</label>
                                 <input type="text" class="form-control" name="nombre" id="nombre" required readonly value="{{ $cliente->nombre }}">
@@ -224,36 +235,35 @@
                             </div>
                         </div>
 
-                        @if ($cliente->tipo_cliente == 'Juridica')
-                            <hr class="w-100" id="section_representante_hr">
 
-                            <div id="section_representante" class="d-flex w-100">
-                                <div class="col-sm-6 col-md-3">
-                                    <div class="form-group">
-                                        <label class="form-label">Nombre Representante</label>
-                                        <input type="text" class="form-control" name="nombre_representante" id="nombre_representante" readonly value="{{ $cliente->nombre_representante }}" placeholder="Nombre del representante legal">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-md-3">
-                                    <div class="form-group">
-                                        <label class="form-label">Identificacion</label>
-                                        <input type="number" class="form-control" name="identificacion_representante" id="identificacion_representante" readonly value="{{ $cliente->identificacion_representante }}" placeholder="Escriba la Identificacion">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-md-3">
-                                    <div class="form-group">
-                                        <label class="form-label">Correo</label>
-                                        <input type="email" class="form-control" name="direccion_representante" id="direccion_representante" readonly value="{{ $cliente->direccion_representante }}" placeholder="Escriba el correo">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-md-3">
-                                    <div class="form-group">
-                                        <label class="form-label">Celular</label>
-                                        <input type="number" class="form-control" name="celular_representante" id="celular_representante" readonly value="{{ $cliente->celular_representante }}" placeholder="Escriba el celular">
-                                    </div>
+                        <hr class="w-100 {{ $cliente->tipo_cliente == 'Natural' ? 'd-none' : '' }}" id="section_representante_hr">
+
+                        <div id="section_representante" class="d-flex w-100 {{ $cliente->tipo_cliente == 'Natural' ? 'd-none' : '' }}">
+                            <div class="col-sm-6 col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Nombre Representante</label>
+                                    <input type="text" class="form-control" name="nombre_representante" id="nombre_representante" readonly value="{{ $cliente->nombre_representante }}" placeholder="Nombre del representante legal">
                                 </div>
                             </div>
-                        @endif
+                            <div class="col-sm-6 col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Identificacion</label>
+                                    <input type="number" class="form-control" name="identificacion_representante" id="identificacion_representante" readonly value="{{ $cliente->identificacion_representante }}" placeholder="Escriba la Identificacion">
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Correo</label>
+                                    <input type="email" class="form-control" name="direccion_representante" id="direccion_representante" readonly value="{{ $cliente->direccion_representante }}" placeholder="Escriba el correo">
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Celular</label>
+                                    <input type="number" class="form-control" name="celular_representante" id="celular_representante" readonly value="{{ $cliente->celular_representante }}" placeholder="Escriba el celular">
+                                </div>
+                            </div>
+                        </div>
 
                         {{-- <div class="col-md-4">
                             <div class="form-group">
@@ -488,8 +498,7 @@
                         <table class="table table-hover table-vcenter table-striped">
                             <thead>
                                 <tr>
-                                    <th>Numero</th>
-                                    <th>Fecha</th>
+                                    <th>Demandado/Demandante</th>
                                     <th>Tipo</th>
                                     <th>Radicado</th>
                                     <th>Juzgado</th>
@@ -501,8 +510,11 @@
 
                                 @foreach ($procesos as $proceso)
                                     <tr>
-                                        <td class="width40">{{ $proceso->num_proceso }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($proceso->created_at)->format('d/m/Y') }}</td>
+                                        <td class="width50">
+                                            <b>Demandado:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandado')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandados' }}
+                                            <br>
+                                            <b>Demandante:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandante')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandantes' }}
+                                        </td>
                                         <td>{{ $proceso->tipo }}</td>
                                         <td>{{ $proceso->radicado ?? 'N/A' }}</td>
                                         <td>{{ $proceso->juzgado ?? 'N/A' }}</td>

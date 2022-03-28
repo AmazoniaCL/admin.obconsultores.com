@@ -1,0 +1,9 @@
+- En el proceso Penal porner los delitos como sbproceso, dentro del detalle del proceso poner otra pestaña de la fiscalia, similiar al juzdado, esto solo para los penales
+- Agregar pestaña de audiencias, en el proceso, deben ir las 5 audiencias y en cada una habra un proceso
+
+
+
+
+- Agregar las 5 agudiencias en el proceso penal predeterminadamente,
+- Hacer una vista aparte donde ira el detalle de la audiencia
+-

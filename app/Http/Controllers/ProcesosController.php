@@ -301,7 +301,7 @@ class ProcesosController extends Controller
     public function ver(Request $request) {
         $proceso = Proceso::where('id', $request['id'])->with('clientes')->with('actuaciones.anotaciones')->with('users')->get();
 
-        $audiencias = Audiencia::where('procesos_id', $request['id'])->orderBy('fecha', 'desc')->limit(1)->get();
+        $audiencias = Audiencia::where('procesos_id', $request['id'])->orderBy('fecha', 'asc')->get();
 
         $detalle_proceso_demandado = Detalle_proceso::where('tipo', 'Demandado')->where('procesos_id', $request['id'])->with('demandados')->with('abogados')->get();
         $detalle_proceso_demandante = Detalle_proceso::where('tipo', 'Demandante')->where('procesos_id', $request['id'])->with('demandados')->get();
@@ -320,7 +320,7 @@ class ProcesosController extends Controller
             }
         }
         return view('procesos.ver', [
-            'proceso' =>$proceso,
+            'proceso' => $proceso,
             'audiencias' => $audiencias,
             'proxima_audiencia' => $proxima_audiencia ?? NULL,
             'detalle_proceso_demandado' => $detalle_proceso_demandado,
@@ -344,10 +344,10 @@ class ProcesosController extends Controller
 
         if ($request->hasfile('anotacion_file')) {
 
-            foreach ($files as $file) {
+            foreach ($files as $key => $file) {
                 $extension_file = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
                 $ruta_file = 'docs/procesos/actuaciones/';
-                $nombre_file = 'AC'.$date->format('YmdHis').'.'.$extension_file;
+                $nombre_file = 'AC'.$date->format('YmdHis').'_'.$key.'.'.$extension_file;
                 Storage::disk('public')->put($ruta_file.$nombre_file, File::get($file));
                 $nombre_completo_file = $ruta_file.$nombre_file;
 
@@ -627,13 +627,23 @@ class ProcesosController extends Controller
     }
 
     public function agg_audiencia(Request $request) {
-        $audiencia = Audiencia::create([
-            'fecha' => $request['fecha_audiencia'],
-            'observaciones' => $request['observaciones'] ?? 'NA',
-            'procesos_id' => $request['procesos_id'],
-        ])->save();
+        if($request['audiencia_id']) {
+            $audiencia = Audiencia::find($request['audiencia_id']);
+            $audiencia->update([
+                'fecha' => $request['fecha_audiencia'],
+                'observaciones' => $request['observaciones'],
+            ]);
 
-        return redirect()->back()->with(['audiencia' => 1]);
+            return redirect()->back()->with(['audiencia_update' => 1]);
+        } else {
+            $audiencia = Audiencia::create([
+                'fecha' => $request['fecha_audiencia'],
+                'observaciones' => $request['observaciones'] ?? 'NA',
+                'procesos_id' => $request['procesos_id'],
+            ])->save();
+
+            return redirect()->back()->with(['audiencia' => 1]);
+        }
     }
 
     public function update_audiencia(Request $request) {
@@ -785,6 +795,14 @@ class ProcesosController extends Controller
         return Detalle_proceso::find($request['id'])->delete();
     }
 
+    public function detalle_audiencia(Request $request) {
+        return Audiencia::find($request['id']);
+    }
+
+    public function delete_detalle_audiencia(Request $request) {
+        return Audiencia::find($request['id'])->delete();
+    }
+
     public function generar_informe(Request $request) {
         $proceso = Proceso::where('id', $request['id'])->with('clientes')->with(array('actuaciones' => function($query){
             $query->orderBy('fecha','desc');
@@ -817,6 +835,20 @@ class ProcesosController extends Controller
         ]);
 
         return redirect()->back()->with(['juzgado' => 1]);
+    }
+
+    public function fiscalia(Request $request) {
+        $proceso = Proceso::find($request['proceso_id']);
+
+        $proceso->update([
+            'fiscalia' => $request['fiscalia'],
+            'fiscal' => $request['fiscal'],
+            'telefono_fiscal' => $request['telefono_fiscal'],
+            'direccion_fiscal' => $request['direccion_fiscal'],
+            'correo_fiscal' => $request['correo_fiscal'],
+        ]);
+
+        return redirect()->back()->with(['fiscal' => 1]);
     }
 
     public function acceso(Request $request) {
