@@ -16,6 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client;
 
 class SincronizarActuaciones implements ShouldQueue
 {
@@ -44,11 +45,54 @@ class SincronizarActuaciones implements ShouldQueue
         foreach ($procesos as $proceso) {
             if(strlen((string) $proceso->radicado) != 23) continue;
 
+            $curlHeaders = array(
+                "Accept: application/json",
+                "Content-Type: application/json; charset=utf-8",
+            );
+
+            $options = array(
+                CURLOPT_URL => 'https://consultaprocesos.ramajudicial.gov.co/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado,
+                CURLOPT_HTTPHEADER => $curlHeaders,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 600,
+                CURLOPT_HEADER => false,
+                CURLOPT_FOLLOWLOCATION => 0,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_PORT => 448
+            );
+
+            $ch = curl_init();
+            curl_setopt_array($ch , $options);
+
+            $output = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+
+            dd($err);
+            dd(json_decode($output));
+
+            $client = new Client();
+            // $request = $client->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
+            $request = $client->request('POST', 'https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado, [
+                'allow_redirects' => [
+                    'max'             => 10,        // allow at most 10 redirects.
+                    'strict'          => true,      // use "strict" RFC compliant redirects.
+                    'referer'         => true,      // add a Referer header
+                    'protocols'       => ['https'], // only allow https URLs
+                    'track_redirects' => true
+                ]
+            ]);
+            $response = $request->getBody();
+
+            dd($response);
+
             $ResponseProceso = Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
             $DataProceso = json_decode($ResponseProceso, true);
 
             if(isset($DataProceso['procesos']) && is_array($DataProceso['procesos'])) {
-                $ResponseActuaciones =  Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $DataProceso['procesos'][0]['idProceso'] . '?pagina=1');
+                $idProceso = $DataProceso['procesos'][0]['idProceso'] ?? null;
+                $ResponseActuaciones = Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $idProceso . '?pagina=1');
                 $DataActuaciones = json_decode($ResponseActuaciones, true);
 
                 // dd($DataActuaciones);
@@ -74,8 +118,9 @@ class SincronizarActuaciones implements ShouldQueue
                     }
                 }
 
-                if($DataActuaciones['paginacion']['cantidadPaginas'] > 1) {
+                if(isset($DataActuaciones['paginacion']['cantidadPaginas']) && $DataActuaciones['paginacion']['cantidadPaginas'] > 1) {
                     for ($i = 2; $i <= $DataActuaciones['paginacion']['cantidadPaginas']; $i++) {
+                        $idProceso = $DataProceso['procesos'][0]['idProceso'] ?? null;
                         $ResponseActuaciones =  Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $DataProceso['procesos'][0]['idProceso'] . '?pagina=' . $i);
                         $DataActuaciones = json_decode($ResponseActuaciones, true);
 

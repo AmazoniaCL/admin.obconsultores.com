@@ -356,4 +356,8 @@ class AdminController extends Controller
     {
         return parent::callAction($method, array_values($parameters));
     }
+
+    public function sincronizacion(Request $request) {
+        return view('administrador.sincronizacion');
+    }
 }

@@ -9,7 +9,36 @@ $(document).ready(function () {
 
     $('#form_crear_proceso').submit(function () {
         $('#btn_crear_proceso').attr('disabled', true).html(`<span class="spinner-border spinner-border-sm"> </span> Crear`);
-    })
+    });
+
+    $('#form_agg_audiencia').submit(function () {
+        let input = $('#fecha_audienciaInput');
+        let value = input.val();
+        let date = moment(value, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+        input.val(date);
+
+        return true;
+    });
+
+    // $('#fecha_audiencia').tempusDominus();
+    new tempusDominus.TempusDominus(document.getElementById('fecha_audiencia'), {
+        useCurrent: false,
+        display: {
+            buttons: {
+                close: true,
+            },
+            components: {
+                useTwentyfourHour: true,
+                decades: false,
+                year: true,
+                month: true,
+                date: true,
+                hours: true,
+                minutes: true,
+                seconds: true
+            }
+        }
+    });
 })
 
 $.ajaxSetup({
@@ -229,10 +258,10 @@ function buscar_cliente() {
     return false;
 }
 
-function agregar_actuacion(id) {
-    $('#procesos_id').val(id)
-
-    $('#ModalAddActuacion').modal('show')
+function agregar_actuacion() {
+    $('#form_agg_actuacion')[0].reset();
+    $('#contenedor-archivo').removeClass('d-none');
+    $('#contenedor-archivo').addClass('d-flex');
 }
 
 function habilitar_formularo_proceso() {
@@ -361,12 +390,62 @@ function update_actuacion(id) {
             $('#actuacion_id').val(data.id)
 
             $('#form_agg_actuacion').attr("action", "/procesos/update_actuacion_post");
-            $('#btn_agg_actuacion').text('Enviar')
-            $('#btn_cancelar_actuacion').removeClass('d-none')
+            $('#btn_agg_actuacion').text('Enviar');
+            $('#btn_cancelar_actuacion').removeClass('d-none');
 
-            $('#agg_actuacion').collapse('show')
+            $('#contenedor-archivo').addClass('d-none');
+            $('#contenedor-archivo').removeClass('d-flex');
+
+            $('#agg_actuacion').collapse('show');
 		}
     })
+}
+
+function archivos_actuacion(id) {
+    let form = $('#form_agg_actuacion_archivos');
+    $('#nombre', form).val('');
+    $('#archivo_actuaciones_id', form).val('');
+
+    $.ajax({
+		url: '/procesos/actuaciones/archivos',
+        type: 'POST',
+        data: {id:id},
+		success: function (data) {
+            let html = '';
+
+            data.forEach((row, index) => {
+                html += `
+                    <tr>
+                        <td>
+                            <b>${ index + 1 }</b>
+                        </td>
+                        <td>
+                            ${ row.nombre }
+                        </td>
+                        <td class="text-center">
+                            <a href="/storage/${ row.anotacion_file }" target="_blank">
+                                <button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button>
+                            </a>
+                            <button type="button" class="btn btn-success btn-sm ${ (!row.id) ? 'd-none' : '' }" onclick="editar_archivo_anotacion(${ row.id }, '${row.nombre}')" title="Editar"><i class="fa fa-pencil"></i></button>
+                            <button type="button" class="btn btn-danger btn-sm ${ (!row.id) ? 'd-none' : '' }" onclick="eliminar_archivo_anotacion(${ row.id })" title="Eliminar"><i class="fa fa-trash-o"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            $('#agg_actuacion_archivos').collapse('show');
+            $('#actuaciones_id').val(id);
+            $('#content_archivos_actuacion').html(html);
+		}
+    })
+}
+
+function editar_archivo_anotacion(id, nombre) {
+    let form = $('#form_agg_actuacion_archivos');
+
+    $('#nombre', form).val(nombre);
+    $('#archivo_actuaciones_id', form).val(id);
+    $('#anotacion_file', form).prop('required', false);
 }
 
 function cancelar_update_actuacion() {
@@ -401,6 +480,13 @@ function agregar_audiencia() {
     $('#form_agg_audiencia').attr('action', '/procesos/agg_audiencia');
     $('#btn_agg_audiencia').text('Enviar');
     $('#card_audiencias').removeClass('card-collapsed');
+}
+
+function agregar_archivos() {
+    $('#form_agg_archivos').attr('action', '/procesos/agg_archivos');
+    $('#btn_agg_archivos').text('Enviar');
+    $('#agg_archivos').removeClass('collapsed');
+    $('#card_archivos').removeClass('card-collapsed');
 }
 
 function agregar_demandados() {
@@ -756,6 +842,34 @@ function eliminar_audiencia(id) {
             success: function (data) {
                 $('#delete_confirmed').removeClass('d-none');
                 setTimeout(function(){ location.reload(); }, 600);
+            }
+        });
+    }
+}
+
+function eliminar_archivo(id) {
+    if (window.confirm("¿Seguro desea eliminar el archivo?")) {
+        $.ajax({
+            url: '/procesos/delete_archivos',
+            type: 'post',
+            data: {id},
+            success: function (data) {
+                $('#delete_confirmed_archivo').removeClass('d-none');
+                setTimeout(function(){ location.reload(); }, 500);
+            }
+        });
+    }
+}
+
+function eliminar_archivo_anotacion(id) {
+    if (window.confirm("¿Seguro desea eliminar el archivo?")) {
+        $.ajax({
+            url: '/procesos/actuaciones/archivos/delete',
+            type: 'post',
+            data: {id},
+            success: function (data) {
+                $('#delete_confirmed_archivo').removeClass('d-none');
+                setTimeout(function(){ location.reload(); }, 500);
             }
         });
     }

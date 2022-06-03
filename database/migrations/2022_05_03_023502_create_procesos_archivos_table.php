@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAnotacionFilesTable extends Migration
+class CreateProcesosArchivosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,16 @@ class CreateAnotacionFilesTable extends Migration
      */
     public function up()
     {
-        Schema::create('anotacion_files', function (Blueprint $table) {
+        Schema::create('procesos_archivos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->nullable();
-            $table->string('anotacion_file')->nullable();
-            $table->foreignId('actuaciones_id')
+
+            $table->string('nombre');
+            $table->string('file');
+
+            $table->foreignId('procesos_id')
                 ->constrained()
-                ->onDelete('cascade');;
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
         });
@@ -32,6 +35,6 @@ class CreateAnotacionFilesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('anotacion_files');
+        Schema::dropIfExists('procesos_archivos');
     }
 }

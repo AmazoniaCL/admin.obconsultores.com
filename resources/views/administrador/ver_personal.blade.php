@@ -47,7 +47,12 @@
                         </div>
                         <div class="form-group col-6">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" name="password" placeholder="Escriba la contraseña" {{!$usuario->password ? 'required' : ''}} >
+                            @if ($usuario)
+                                <input type="password" class="form-control" name="password" placeholder="Escriba la contraseña" {{!$usuario->password ? 'required' : ''}} >
+
+                            @else
+                                <input type="password" class="form-control" name="password" placeholder="Escriba la contraseña" required >
+                            @endif
                         </div>
                     </div>
                     <div class="row">
@@ -55,17 +60,28 @@
                             <label class="form-label">Rol</label>
                             <select name="rol" id="rol" class="form-control" required>
                                 <option value="">Seleccione el rol</option>
-                                <option value="admin" {{$usuario->roles[0]->name == "admin" ? 'selected' : ''}}>Administrador</option>
-                                <option value="general" {{$usuario->roles[0]->name == "general" ? 'selected' : ''}}>General</option>
-                                <option value="cliente" {{$usuario->roles[0]->name == "cliente" ? 'selected' : ''}}>Cliente</option>
+                                @if ($usuario && $usuario->roles[0])
+                                    <option value="admin" {{$usuario->roles[0]->name == "admin" ? 'selected' : ''}}>Administrador</option>
+                                    <option value="general" {{$usuario->roles[0]->name == "general" ? 'selected' : ''}}>General</option>
+                                    <option value="cliente" {{$usuario->roles[0]->name == "cliente" ? 'selected' : ''}}>Cliente</option>
+                                @else
+                                    <option value="admin">Administrador</option>
+                                    <option value="general">General</option>
+                                    <option value="cliente">Cliente</option>
+                                @endif
                             </select>
                         </div>
                         <div class="form-group col-6">
                             <label class="form-label">Estado</label>
                             <select name="estado" id="estado" class="form-control" required>
                                 <option value="">Seleccione el estado</option>
-                                <option value="Activo" {{$usuario->estado == "Activo" ? 'selected' : ''}}>Activo</option>
-                                <option value="Inactivo" {{$usuario->estado == "Inactivo" ? 'selected' : ''}}>Inactivo</option>
+                                @if ($usuario)
+                                    <option value="Activo" {{$usuario->estado == "Activo" ? 'selected' : ''}}>Activo</option>
+                                    <option value="Inactivo" {{$usuario->estado == "Inactivo" ? 'selected' : ''}}>Inactivo</option>
+                                @else
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                @endif
                             </select>
                         </div>
                         {{-- <div class="form-group multiselect_div col-6">
@@ -78,7 +94,9 @@
                         </div> --}}
                     </div>
 
-                    <input type="hidden" name="id" value="{{ $usuario->id }}">
+                    @if ($usuario)
+                        <input type="hidden" name="id" value="{{ $usuario->id }}">
+                    @endif
                     <button type="submit" class="btn btn-primary btn-lg text-center"  id="btn_agg_usuario">Agregar Usuario</button>
             </form>
         </div>

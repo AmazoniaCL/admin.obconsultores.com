@@ -29,7 +29,7 @@ Route::get('/procesos/searh/{id}', 'ProcesosController@search');
 Route::get('/procesos/ver/{id}', 'ProcesosController@ver')->name('ver-proceso');
 Route::get('/procesos/eliminar/{id}', 'ProcesosController@delete');
 
-Route::group(['middleware' => ['permission:penal|civil|familia|laboral|seguridad social|administrativo|universal']], function () {
+Route::group(['middleware' => ['permission:general|penal|civil|familia|laboral|seguridad social|administrativo|universal']], function () {
     Route::post('/procesos/agregar_actuacion', 'ProcesosController@agregar_actuacion');
     Route::get('/buscar/{buscar}', 'ProcesosController@buscar');
     Route::get('/buscar', 'ProcesosController@buscar_view');
@@ -54,6 +54,11 @@ Route::group(['middleware' => ['permission:penal|civil|familia|laboral|seguridad
     Route::get('/procesos/ver/acceso/{id}', 'ProcesosController@acceso');
     Route::post('/procesos/agregar_acceso', 'ProcesosController@agregar_acceso');
     Route::post('/procesos/delete_acceso', 'ProcesosController@delete_acceso');
+    Route::post('/procesos/agg_archivos', 'ProcesosController@agg_archivos');
+    Route::post('/procesos/delete_archivos', 'ProcesosController@delete_archivos');
+    Route::post('/procesos/actuaciones/archivos', 'ProcesosController@get_archivos_actuacion');
+    Route::post('/procesos/actuaciones/archivos/add', 'ProcesosController@add_archivos_actuacion');
+    Route::post('/procesos/actuaciones/archivos/delete', 'ProcesosController@delete_archivos_actuacion');
 });
 
 // Rutas para Procesos Civil
@@ -94,22 +99,22 @@ Route::group(['middleware' => ['permission:penal|universal']], function () {
 // Rutas para Clientes
 Route::get('/clientes', 'ClientesController@index')->name('clientes')->middleware('cliente');
 Route::get('/clientes/ver/{id}', 'ClientesController@ver')->name('ver-cliente');
+Route::get('/clientes/search/{search}', 'ClientesController@search');
+Route::get('/clientes/ver/{id}/search', 'ClientesController@search_proceso');
 
-Route::group(['middleware' => ['permission:clientes|universal']], function () {
+Route::group(['middleware' => ['permission:general|universal']], function () {
     Route::get('/clientes/crear', 'ClientesController@crear');
     Route::post('/clientes/create', 'ClientesController@create');
     Route::post('/clientes/update', 'ClientesController@update');
     Route::post('/clientes/delete', 'ClientesController@delete');
     Route::post('/clientes/enviar_mensaje', 'ClientesController@enviar_mensaje');
-    Route::get('/clientes/search/{search}', 'ClientesController@search');
-    Route::get('/clientes/ver/{id}/search', 'ClientesController@search_proceso');
 
     Route::post('/clientes/add-cedula', 'ClientesController@add_cedula');
     Route::post('/clientes/add-contrato', 'ClientesController@add_contrato');
 });
 
 // Rutas para Demandados
-Route::group(['middleware' => ['permission:demandados|universal']], function () {
+Route::group(['middleware' => ['permission:general|demandados|universal']], function () {
     Route::get('/demandados', 'DemandadosController@index')->name('demandados');
     Route::get('/demandados/ver/{id}', 'DemandadosController@ver')->name('ver-demandado');
     Route::post('/demandados/agregar_demandado', 'DemandadosController@agregar_demandado');
@@ -118,7 +123,7 @@ Route::group(['middleware' => ['permission:demandados|universal']], function () 
 });
 
 // Rutas para Consultas
-Route::group(['middleware' => ['permission:clientes|universal']], function () {
+Route::group(['middleware' => ['permission:general|clientes|universal']], function () {
     Route::get('/consultas', 'ConsultasController@index')->name('consultas');
     Route::get('/consultas/contestadas', 'ConsultasController@contestadas');
     Route::get('/consultas/conversaciones', 'ConsultasController@contestadas');
@@ -154,6 +159,7 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::post('/administrador/delete_personal', 'AdminController@delete_personal')->name('delete_personal');
     Route::get('/administrador/pagina-web', 'AdminController@pagina_web')->name('pagina-web');
     Route::post('/administrador/pagina-web', 'AdminController@pagina_web_update');
+    Route::get('/administrador/sincronizacion', 'AdminController@sincronizacion')->name('sincronizacion');
 });
 
 Route::get('/testjob', 'ProcesosController@testjob');

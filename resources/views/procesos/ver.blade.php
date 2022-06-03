@@ -3,12 +3,19 @@
 @section('title_content') Procesos @endsection
 
 @section('myStyles')
-    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker3.css') }}"/>
+    <!-- Tempus Dominus Styles -->
+    <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet" crossorigin="anonymous">
 @endsection
 
 @section('myScripts')
+    <script src="{{ asset('assets/plugins/fullcalendar/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/popper.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/datetimepicker6.0.0.js') }}"></script>
+
     <script src="{{ asset('assets/js/procesos.js') }}"></script>
-    <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 @endsection
 
 @section('content')
@@ -56,6 +63,12 @@
         @if (session()->has('fiscal') && session()->has('fiscal') == 1)
             <div class="alert alert-icon alert-success col-12" role="alert">
                 <i class="fe fe-check mr-2" aria-hidden="true"></i> Se actualizo la información de la fiscalía correctamente.
+            </div>
+        @endif
+
+        @if (session()->has('archivo') && session()->has('archivo') == 1)
+            <div class="alert alert-icon alert-success col-12" role="alert">
+                <i class="fe fe-check mr-2" aria-hidden="true"></i> Archivo agregado correctamente.
             </div>
         @endif
 
@@ -614,6 +627,80 @@
 
         </form>
 
+        <div class="card card-collapsed mb-2" id="card_archivos">
+            <div class="card-header">
+                <h3 class="card-title">Archivos del proceso</h3>
+                <div class="card-options">
+                    @if ($archivos->count() == 0)
+                        <p><b>No hay archivos</b></p>
+                    @else
+                        <p><b>Hay {{ $archivos->count() }} archivos</b></p>
+                    @endif
+
+                    <a href="#" class="card-options-collapse mr-3" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="agregar_archivos()" data-toggle="collapse" data-target="#agg_archivos" aria-expanded="false" aria-controls="agg_archivos"><i class="fe fe-plus mr-2"></i> Agregar </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="card p-5 collapse" id="agg_archivos" style="border: solid 1px #cda854;background: #e9ecef !important;">
+                        <form action="/procesos/agg_archivos" id="form_agg_archivos" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <div class="row">
+                                <div class="form-group col-8">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Escriba el nombre">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label class="form-label">Archivo</label>
+                                    <input type="file" class="form-control" accept="application/pdf,image/png,image/jpg,image/jpeg" name="file" id="file" required />
+                                </div>
+                                <input type="hidden" name="procesos_id" value="{{ $proceso[0]->id }}">
+
+                                <div class="form-group col-1">
+                                    <button type="submit" class="btn btn-primary btn-lg text-center mt-4" id="btn_agg_archivos">Enviar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="alert alert-icon alert-success col-12 d-none" id="delete_confirmed_archivo" role="alert">
+                        <i class="fe fe-check mr-2" aria-hidden="true"></i> Archivo eliminado correctamente
+                    </div>
+
+                    @if ($archivos->count() > 0)
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            @foreach ($archivos as $key => $row)
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <b>{{ $key + 1 }}</b>
+                                        </td>
+                                        <td>
+                                            {{ $row->nombre }}
+                                        </td>
+                                        <td rowspan="2" class="text-center">
+                                            <a href="{{ asset('/storage/'.$row->file) }}" target="_blank">
+                                                <button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminar_archivo({{ $row->id }})" title="Eliminar"><i class="fa fa-trash-o"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endforeach
+                        </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+
         @if ($proceso[0]->tipo == "Penal")
             <form action="/procesos/fiscalia" method="post" style="display: contents;" enctype="multipart/form-data">
                 @csrf
@@ -677,7 +764,6 @@
 
             </form>
         @endif
-
 
         <div class="card card-collapsed mb-2" id="card_demandantes">
             <div class="card-header">
@@ -1040,11 +1126,20 @@
                             @csrf
 
                                 <div class="row">
-                                    <div class="form-group col-2">
+                                    <div class="form-group col-3">
                                         <label class="form-label">Fecha</label>
-                                        <input data-provide="datepicker" data-date-format='yyyy-mm-dd' data-date-autoclose="true" name="fecha_audiencia" id="fecha_audiencia" class="form-control" placeholder="MM/DD/AAAA" required autocomplete="off" required>
+
+                                        <div class='input-group' id='fecha_audiencia' data-td-target-input='nearest' data-td-target-toggle='nearest'>
+                                            <input id='fecha_audienciaInput' name="fecha_audiencia" type='text' class='form-control' data-td-target='#fecha_audiencia' />
+                                            <span class='input-group-text' data-td-target='#fecha_audiencia' data-td-toggle='datetimepicker'>
+                                                <span class='fa-solid fa-calendar'></span>
+                                            </span>
+                                        </div>
+
+                                        {{-- <input type='text' class="form-control" name="fecha_audiencia" id="fecha_audiencia" placeholder="MM/DD/AAAA" autocomplete="off" required/> --}}
+                                        {{-- <input data-provide="datepicker" data-date-format='yyyy-mm-dd h:i:s' data-date-autoclose="true" name="fecha_audiencia" id="fecha_audiencia" class="form-control" placeholder="MM/DD/AAAA" autocomplete="off" required> --}}
                                     </div>
-                                    <div class="form-group col-9">
+                                    <div class="form-group col-8">
                                         <label class="form-label">Observaciones</label>
                                         <input type="text" class="form-control" name="observaciones" id="observaciones" placeholder="Escriba las observaciones">
                                     </div>
@@ -1059,35 +1154,37 @@
                         </form>
                     </div>
 
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Observaciones</th>
-                                <th>Fecha</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        @foreach ($audiencias as $key => $row)
-                            <tbody>
+                    @if ($audiencias->count() > 0)
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <b>{{ $key + 1 }}</b>
-                                    </td>
-                                    <td>
-                                        {{ $row->observaciones }}
-                                    </td>
-                                    <td>
-                                        <b>{{ $row->fecha ?? 'N/A' }}
-                                    </td>
-                                    <td rowspan="2" class="text-center">
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="editar_audiencia({{ $row->id }})" title="Editar"><i class="fa fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="eliminar_audiencia({{ $row->id }})" title="Eliminar"><i class="fa fa-trash-o"></i></button>
-                                    </td>
+                                    <th>#</th>
+                                    <th>Observaciones</th>
+                                    <th>Fecha</th>
+                                    <th></th>
                                 </tr>
-                            </tbody>
-                        @endforeach
-                    </table>
+                            </thead>
+                            @foreach ($audiencias as $key => $row)
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <b>{{ $key + 1 }}</b>
+                                        </td>
+                                        <td>
+                                            {{ $row->observaciones }}
+                                        </td>
+                                        <td>
+                                            <b>{{ $row->fecha ?? 'N/A' }}
+                                        </td>
+                                        <td rowspan="2" class="text-center">
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="editar_audiencia({{ $row->id }})" title="Editar"><i class="fa fa-edit"></i></button>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminar_audiencia({{ $row->id }})" title="Eliminar"><i class="fa fa-trash-o"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endforeach
+                        </table>
+                    @endif
 
                 </div>
             </div>
@@ -1128,7 +1225,7 @@
 
                             @else
                                 @hasanyrole('admin|general')
-                                    <button type="button" onclick="agregar_audiencia()" data-toggle="collapse" data-target="#agg_audiencia" aria-expanded="false" aria-controls="agg_audiencia" class="btn btn-primary btn-sm mr-2">Agregar audiencia</button>
+                                    {{-- <button type="button" onclick="agregar_audiencia()" data-toggle="collapse" data-target="#agg_audiencia" aria-expanded="false" aria-controls="agg_audiencia" class="btn btn-primary btn-sm mr-2">Agregar audiencia</button> --}}
                                 @endhasanyrole
                             @endif
                             {{-- @if (isset($proxima_audiencia))
@@ -1139,7 +1236,7 @@
                             @endif --}}
 
                             @hasanyrole('admin|general')
-                                <button type="button" data-toggle="collapse" data-target="#agg_actuacion" aria-expanded="false" aria-controls="agg_actuacion" class="btn btn-primary btn-sm">Agregar +</button>
+                                <button type="button" onclick="agregar_actuacion()" data-toggle="collapse" data-target="#agg_actuacion" aria-expanded="false" aria-controls="agg_actuacion" class="btn btn-primary btn-sm">Agregar +</button>
                             @endhasanyrole
 
                         </div>
@@ -1166,18 +1263,30 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="form-group col-4">
+                                        <div class="form-group col-6">
                                             <label class="form-label">Fecha Inicio Termino</label>
                                             <input data-provide="datepicker" autocomplete="off" data-date-format='yyyy-mm-dd' data-date-autoclose="true" name="f_inicio_termino" id="f_inicio_termino" class="form-control" placeholder="MM/DD/AAAA" >
                                         </div>
-                                        <div class="form-group col-4">
+                                        <div class="form-group col-6">
                                             <label class="form-label">Fecha Fin Termino</label>
                                             <input data-provide="datepicker" autocomplete="off" data-date-format='yyyy-mm-dd' data-date-autoclose="true" name="f_fin_termino" id="f_fin_termino" class="form-control" placeholder="MM/DD/AAAA" >
                                         </div>
-                                        <div class="form-group col-4">
+
+                                        <div id="contenedor-archivo" class="row col-12 d-flex">
+                                            <div class="form-group col-6">
+                                                <label class="form-label">Nombre del archivo</label>
+                                                <input type="text" class="form-control" name="nombre_archivo" id="nombre_archivo" placeholder="Escriba el nombre">
+                                            </div>
+                                            <div class="form-group col-6">
+                                                <label class="form-label">Archivo</label>
+                                                <input type="file" class="form-control" accept="application/pdf,image/png,image/jpg,image/jpeg" name="anotacion_file" id="anotacion_file" />
+                                            </div>
+                                        </div>
+
+                                        {{-- <div class="form-group col-4">
                                             <label class="form-label">Archivo de la anotación</label>
                                             <input type="file" class="form-control" accept="application/pdf, .doc, .docx" name="anotacion_file[]" id="anotacion_file[]" multiple>
-                                        </div>
+                                        </div> --}}
                                     </div>
 
                                     <input type="hidden" name="procesos_id" id="procesos_id" value="{{ $proceso[0]->id }}">
@@ -1187,6 +1296,42 @@
                                     <button type="button" onclick="cancelar_update_actuacion()" class="btn btn-secondary btn-lg text-center d-none" id="btn_cancelar_actuacion">Cancelar</button>
 
                             </form>
+                        </div>
+
+                        <div class="card p-5 collapse" id="agg_actuacion_archivos" style="border: solid 1px #cda854;background: #e9ecef !important;">
+                            <form action="/procesos/actuaciones/archivos/add" id="form_agg_actuacion_archivos" method="post" enctype="multipart/form-data">
+                                @csrf
+                                <div class="row">
+                                    <div class="form-group col-8">
+                                        <label class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Escriba el nombre">
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label class="form-label">Archivo</label>
+                                        <input type="file" class="form-control" accept="application/pdf,image/png,image/jpg,image/jpeg" name="anotacion_file" id="anotacion_file" required />
+                                    </div>
+
+                                    <input type="hidden" name="actuaciones_id" id="actuaciones_id" value="">
+                                    <input type="hidden" name="archivo_actuaciones_id" id="archivo_actuaciones_id" value="">
+
+                                    <div class="form-group col-1">
+                                        <button type="submit" class="btn btn-primary btn-lg text-center mt-4" id="btn_agg_archivos">Enviar</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nombre</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="content_archivos_actuacion">
+
+                                </tbody>
+                            </table>
                         </div>
 
                         <table class="table table-hover table-vcenter table-striped">
@@ -1213,18 +1358,18 @@
                                             <td>{{ $actuacion->f_fin_termino ?? 'No aplica' }}</td>
                                             <td>{{ $actuacion->idsincronizacion ? 'Sincronizado' : 'Manual' }}</td>
                                             <td class="text-center">
-                                                @if ($actuacion->anotacion_file)
+                                                {{-- @if ($actuacion->anotacion_file)
                                                     <a href="/storage/{{ $actuacion->anotacion_file }}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
                                                 @endif
                                                 @if($actuacion->anotaciones)
                                                     @foreach ($actuacion->anotaciones as $anotacion)
                                                         <a href="http://admin.obconsultores.com/storage/{{ $anotacion->anotacion_file }}" title="{{$anotacion->anotacion_file}}" target="_blank" class="h5"><i class="fa fa-file"></i></a>
-                                                        {{-- <a href="/storage/{{ $anotacion->anotacion_file }}" title="{{$anotacion->anotacion_file}}" target="_blank" class="h5"><i class="fa fa-file"></i></a> --}}
                                                     @endforeach
-                                                @endif
+                                                @endif --}}
 
                                                 @hasanyrole('admin|general')
                                                     @if (!$actuacion->idsincronizacion)
+                                                        <a href="javascript:;" onclick="archivos_actuacion({{ $actuacion->id }})" class="ml-2 text-info h5"><i class="fa fa-file"></i></a>
                                                         <a href="javascript:;" onclick="update_actuacion({{ $actuacion->id }})" class="ml-2 text-dark h5"><i class="fa fa-pencil"></i></a>
                                                         <a href="javascript:;" onclick="eliminar_actuacion({{ $actuacion->id }})" class="ml-2 text-red h5"><i class="fa fa-close"></i></a>
                                                     @endif

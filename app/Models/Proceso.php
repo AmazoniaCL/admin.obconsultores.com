@@ -21,4 +21,8 @@ class Proceso extends Model
     public function users() {
         return $this->belongsTo('App\User');
     }
+
+    public function archivos() {
+        return $this->hasMany('App\Models\Procesos_archivo', 'procesos_id');
+    }
 }

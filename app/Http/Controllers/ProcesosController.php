@@ -21,6 +21,7 @@ use App\Models\Demandado;
 use App\Models\Audiencia;
 use App\Models\Cliente;
 use App\Models\Proceso;
+use App\Models\Procesos_archivo;
 use Carbon\Carbon;
 use PDF;
 
@@ -300,11 +301,12 @@ class ProcesosController extends Controller
 
     public function ver(Request $request) {
         $proceso = Proceso::where('id', $request['id'])->with('clientes')->with('actuaciones.anotaciones')->with('users')->get();
-
         $audiencias = Audiencia::where('procesos_id', $request['id'])->orderBy('fecha', 'asc')->get();
 
         $detalle_proceso_demandado = Detalle_proceso::where('tipo', 'Demandado')->where('procesos_id', $request['id'])->with('demandados')->with('abogados')->get();
         $detalle_proceso_demandante = Detalle_proceso::where('tipo', 'Demandante')->where('procesos_id', $request['id'])->with('demandados')->get();
+
+        $archivos = Procesos_archivo::where('procesos_id', $request['id'])->get();
 
         if($audiencias->count() > 0) {
             $now = Carbon::parse(Carbon::now()->toDateString());
@@ -319,19 +321,19 @@ class ProcesosController extends Controller
                 $proxima_audiencia = 'Hoy';
             }
         }
+
         return view('procesos.ver', [
             'proceso' => $proceso,
             'audiencias' => $audiencias,
             'proxima_audiencia' => $proxima_audiencia ?? NULL,
             'detalle_proceso_demandado' => $detalle_proceso_demandado,
-            'detalle_proceso_demandante' => $detalle_proceso_demandante
+            'detalle_proceso_demandante' => $detalle_proceso_demandante,
+            'archivos' => $archivos,
         ]);
     }
 
     public function agregar_actuacion(Request $request) {
         $date = Carbon::now('America/Bogota');
-
-        $files=$request->file('anotacion_file');
         $actuacion = Actuacion::create([
             'fecha' => $request['fecha'],
             'actuacion' => $request['actuacion'],
@@ -343,23 +345,91 @@ class ProcesosController extends Controller
         ]);
 
         if ($request->hasfile('anotacion_file')) {
+            $file = $request->file('anotacion_file');
 
-            foreach ($files as $key => $file) {
-                $extension_file = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
-                $ruta_file = 'docs/procesos/actuaciones/';
-                $nombre_file = 'AC'.$date->format('YmdHis').'_'.$key.'.'.$extension_file;
-                Storage::disk('public')->put($ruta_file.$nombre_file, File::get($file));
-                $nombre_completo_file = $ruta_file.$nombre_file;
+            $extension_file = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $ruta_file = 'docs/procesos/actuaciones/';
+            $nombre_file = 'AC'.$date->format('YmdHis').'.'.$extension_file;
+            Storage::disk('public')->put($ruta_file.$nombre_file, File::get($file));
+            $nombre_completo_file = $ruta_file.$nombre_file;
 
-                $anotacion = Anotacion_files::create([
-                    'anotacion_file' => $nombre_completo_file,
-                    'actuaciones_id' => $actuacion->id,
-                ]);
-            }
-
+            Anotacion_files::create([
+                'nombre' => $request->nombre_archivo,
+                'anotacion_file' => $nombre_completo_file,
+                'actuaciones_id' => $actuacion->id
+            ]);
         }
 
         return redirect()->route('ver-proceso', [ 'id' => $request['procesos_id'] ]);
+    }
+
+    public function get_archivos_actuacion(Request $request) {
+        $files = Anotacion_files::where('actuaciones_id', $request->id)->get()->toArray();
+        $file  = Actuacion::select('anotacion_file')->find($request->id)->toArray();
+
+        array_push($files, $file);
+        return $files;
+    }
+
+    public function add_archivos_actuacion(Request $request) {
+        $date = Carbon::now('America/Bogota');
+        $file = $request->file('anotacion_file');
+
+        if($request->archivo_actuaciones_id) {
+            $archivo = Anotacion_files::find($request->archivo_actuaciones_id);
+
+            $archivo->update([
+                'nombre' => $request->nombre,
+            ]);
+
+            if ($request->hasfile('anotacion_file')) {
+                Storage::disk('public')->delete($archivo->anotacion_file);
+
+                $extension_file = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $ruta_file = 'docs/procesos/actuaciones/';
+                $nombre_file = 'AC'.$date->format('YmdHis').'.'.$extension_file;
+                Storage::disk('public')->put($ruta_file.$nombre_file, File::get($file));
+                $nombre_completo_file = $ruta_file.$nombre_file;
+
+                $archivo->update([
+                    'anotacion_file' => $nombre_completo_file
+                ]);
+
+                return redirect()->back()->with(['archivo' => 1]);
+            }
+
+            return redirect()->back()->with(['archivo' => 1]);
+        }
+
+        if ($request->hasfile('anotacion_file')) {
+            $extension_file = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $ruta_file = 'docs/procesos/actuaciones/';
+            $nombre_file = 'AC'.$date->format('YmdHis').'.'.$extension_file;
+            Storage::disk('public')->put($ruta_file.$nombre_file, File::get($file));
+            $nombre_completo_file = $ruta_file.$nombre_file;
+
+            Anotacion_files::create([
+                'nombre' => $request->nombre,
+                'anotacion_file' => $nombre_completo_file,
+                'actuaciones_id' => $request->actuaciones_id
+            ]);
+
+            return redirect()->back()->with(['archivo' => 1]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function delete_archivos_actuacion(Request $request) {
+        $file = Anotacion_files::find($request->id);
+
+        if($file) {
+            if(Storage::disk('public')->delete($file->anotacion_file)) {
+                $file->delete();
+            }
+        }
+
+        return $file->delete();
     }
 
     public function buscar_view(Request $request) {
@@ -494,7 +564,7 @@ class ProcesosController extends Controller
         $tipo = 'danger';
         $mensaje = 'El proceso no se elimino, intente nuevamente';
 
-        if(auth()->user()->hasRole('admin') || auth()->user()->id == $request['id']) {
+        if(auth()->user()->hasRole('admin')) {
             if(Proceso::find($request['id'])->delete()) {
                 $tipo = 'success';
                 $mensaje = 'Proceso eliminado correctamente';
@@ -874,6 +944,40 @@ class ProcesosController extends Controller
     public function callAction($method, $parameters)
     {
         return parent::callAction($method, array_values($parameters));
+    }
+
+    public function agg_archivos(Request $request) {
+        $date = Carbon::now('America/Bogota');
+        $file = $request->file('file');
+
+        if ($request->hasfile('file')) {
+            $extension_file = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $ruta_file = 'docs/procesos/archivos/';
+            $nombre_file = 'FL'.$date->format('YmdHis').'.'.$extension_file;
+            Storage::disk('public')->put($ruta_file.$nombre_file, File::get($file));
+            $nombre_completo_file = $ruta_file.$nombre_file;
+        }
+
+        $file = Procesos_archivo::create([
+            'nombre' => $request['nombre'],
+            'file' => $nombre_completo_file,
+            'procesos_id' => $request['procesos_id']
+        ]);
+
+        return redirect()->back()->with(['archivo' => 1]);
+        // return redirect()->route('ver-proceso', [ 'id' => $request['procesos_id'] ]);
+    }
+
+    public function delete_archivos(Request $request) {
+        $file = Procesos_archivo::find($request->id);
+
+        if($file) {
+            if(Storage::disk('public')->delete($file->file)) {
+                $file->delete();
+            }
+        }
+
+        return $file->delete();
     }
 
     public function testjob(Request $request) {
