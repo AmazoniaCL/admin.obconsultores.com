@@ -22,6 +22,11 @@ use ZipArchive;
 
 class AdminController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     public function usuarios() {
         $usuarios = User::paginate(10);
 
@@ -359,5 +364,9 @@ class AdminController extends Controller
 
     public function sincronizacion(Request $request) {
         return view('administrador.sincronizacion');
+    }
+
+    public function getMenu(Request $request) {
+        return Role::all();
     }
 }

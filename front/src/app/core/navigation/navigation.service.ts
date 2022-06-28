@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, ReplaySubject, tap } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, tap } from 'rxjs';
 import { Navigation } from 'app/core/navigation/navigation.types';
+import { environment } from 'environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -9,6 +10,8 @@ import { Navigation } from 'app/core/navigation/navigation.types';
 export class NavigationService
 {
     private _navigation: ReplaySubject<Navigation> = new ReplaySubject<Navigation>(1);
+    private _navigationDinamic: BehaviorSubject<any> = new BehaviorSubject<any>(true);
+
 
     /**
      * Constructor
@@ -29,6 +32,14 @@ export class NavigationService
         return this._navigation.asObservable();
     }
 
+    /**
+     * Getter for navigation
+     */
+     get navigationDinamic$(): Observable<Object[]>
+     {
+         return this._navigationDinamic.asObservable();
+     }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -41,6 +52,16 @@ export class NavigationService
         return this._httpClient.get<Navigation>('api/common/navigation').pipe(
             tap((navigation) => {
                 this._navigation.next(navigation);
+            })
+        );
+    }
+
+    getDinamic(): Observable<Object[]>
+    {
+        return this._httpClient.get<Object[]>(`${environment.apiUrl}/get-menu`).pipe(
+            tap((navigation) => {
+                console.log(navigation);
+                this._navigationDinamic.next(navigation);
             })
         );
     }

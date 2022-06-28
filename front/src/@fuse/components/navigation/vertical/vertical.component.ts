@@ -32,6 +32,7 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     @Input() inner: boolean = false;
     @Input() mode: FuseVerticalNavigationMode = 'side';
     @Input() name: string = this._fuseUtilsService.randomId();
+    @Input() navigationDinamic: Object[];
     @Input() navigation: FuseNavigationItem[];
     @Input() opened: boolean = true;
     @Input() position: FuseVerticalNavigationPosition = 'left';

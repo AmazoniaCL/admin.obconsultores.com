@@ -17,6 +17,17 @@
             <ng-content select="[fuseVerticalNavigationContentHeader]"></ng-content>
         </div>
 
+        <!-- Items Dinamic -->
+        <ng-container *ngFor="let item of navigationDinamic; trackBy: trackByFn">
+
+            <ng-container>
+                <fuse-vertical-navigation-basic-item
+                    [item]="item"
+                    [name]="name"></fuse-vertical-navigation-basic-item>
+            </ng-container>
+
+        </ng-container>
+
         <!-- Items -->
         <ng-container *ngFor="let item of navigation; trackBy: trackByFn">
 

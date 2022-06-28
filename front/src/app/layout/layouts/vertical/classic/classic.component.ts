@@ -15,6 +15,7 @@ export class ClassicLayoutComponent implements OnInit, OnDestroy
 {
     isScreenSmall: boolean;
     navigation: Navigation;
+    navigationDinamic: Object[];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -56,6 +57,13 @@ export class ClassicLayoutComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((navigation: Navigation) => {
                 this.navigation = navigation;
+            });
+
+        // Subscribe to navigation data
+        this._navigationService.navigationDinamic$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((navigation: Object[]) => {
+                this.navigationDinamic = navigation;
             });
 
         // Subscribe to media changes
