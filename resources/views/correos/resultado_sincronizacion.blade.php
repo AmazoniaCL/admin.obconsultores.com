@@ -248,7 +248,7 @@
                               <tr>
                                 {{-- <td height="18" style="font-size:1px; line-height:1px;">&nbsp;</td> --}}
                               </tr>
-                              {{-- <tr>
+                              <tr>
                                 <td align="center" valign="top" >
                                   <table width="400" border="0" cellspacing="0" cellpadding="0" align="center" class="em_wrapper" style="max-width:200px;">
                                     <tr>
@@ -258,7 +258,7 @@
                                     </tr>
                                   </table>
                                 </td>
-                              </tr> --}}
+                              </tr>
                               <tr>
                                 <td height="36" class="em_height">&nbsp;</td>
                               </tr>

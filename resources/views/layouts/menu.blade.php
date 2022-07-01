@@ -79,7 +79,7 @@
                             <li class="{{ Request::is('administrador/documentacion_legal') ? 'active' : '' }}"><a href="{{route('documentacion')}}"><i class="icon-briefcase"></i><span data-hover="Documentación L.">Documentación {{ Request::is('administrador/documentacion_legal') ? 'L.' : 'Legal' }}</span></a></li>
                             <li class="{{ Request::is('administrador/personal') ? 'active' : '' }}{{ Request::is('administrador/personal/*') ? 'active' : '' }}"><a href="{{route('personal')}}"><i class="icon-users"></i><span data-hover="Personal">Personal</span></a></li>
                             <li class="{{ Request::is('administrador/pagina-web') ? 'active' : '' }}{{ Request::is('administrador/pagina-web/*') ? 'active' : '' }}"><a href="{{route('pagina-web')}}"><i class="icon-config"></i><span data-hover="Pagina_Web">Pagina Web</span></a></li>
-                            {{-- <li class="{{ Request::is('administrador/sincronizacion') ? 'active' : '' }}{{ Request::is('administrador/sincronizacion/*') ? 'active' : '' }}"><a href="{{route('sincronizacion')}}"><i class="icon-tools"></i><span data-hover="Sincronización">Sincronización</span></a></li> --}}
+                            <li class="{{ Request::is('administrador/sincronizacion') ? 'active' : '' }}{{ Request::is('administrador/sincronizacion/*') ? 'active' : '' }}"><a href="{{route('sincronizacion')}}"><i class="icon-tools"></i><span data-hover="Sincronización">Sincronización</span></a></li>
                         </ul>
                     </li>
                     @endrole
