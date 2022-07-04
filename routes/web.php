@@ -159,7 +159,7 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::post('/administrador/delete_personal', 'AdminController@delete_personal')->name('delete_personal');
     Route::get('/administrador/pagina-web', 'AdminController@pagina_web')->name('pagina-web');
     Route::post('/administrador/pagina-web', 'AdminController@pagina_web_update');
-    // Route::get('/administrador/sincronizacion', 'AdminController@sincronizacion')->name('sincronizacion');
+    Route::get('/administrador/sincronizacion', 'AdminController@sincronizacion')->name('sincronizacion');
 });
 
-Route::get('/testjob', 'ProcesosController@testjob')->name('sincronizacion');
+// Route::get('/testjob', 'ProcesosController@testjob')->name('sincronizacion');
