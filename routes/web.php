@@ -163,3 +163,7 @@ Route::group(['middleware' => ['role:admin']], function () {
 });
 
 Route::get('/testjob', 'ProcesosController@testjob')->name('sincronizacion');
+
+// Rutas Email
+Route::get('/email','EmailController@index');
+Route::get('/email/create','EmailController@create');
