@@ -4,7 +4,7 @@
 {{-- Include Head --}}
 @include('layouts.head')
 
-<body class="font-opensans iconcolor email_page">
+<body class="font-opensans  email_page">
 
 <!-- Page Loader -->
 <div class="page-loader-wrapper">
@@ -19,7 +19,7 @@
     @include('layouts.barra')
 
     <!-- Notification and  Activity-->
-    <div id="rightsidebar" class="right_sidebar">
+    {{-- <div id="rightsidebar" class="right_sidebar">
         <a href="javascript:void(0)" class="p-3 settingbar float-right"><i class="fa fa-close"></i></a>
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#notification" aria-expanded="true">Notification</a></li>
@@ -128,7 +128,7 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Perfil de Usuario -->
     @include('layouts.perfil')
@@ -136,13 +136,7 @@
     <!-- start Main menu -->
     <div id="left-sidebar" class="sidebar">
         <div class="d-flex justify-content-between brand_name">
-            <h5 class="brand-name">Crush it</h5>
-            <div class="theme_btn">
-                <a class="theme1" data-toggle="tooltip" title="Theme Radical" href="#" onclick="setStyleSheet('../assets/css/theme1.css', 0);"></a>
-                <a class="theme2" data-toggle="tooltip" title="Theme Turmeric" href="#" onclick="setStyleSheet('../assets/css/theme2.css', 0);"></a>
-                <a class="theme3" data-toggle="tooltip" title="Theme Caribbean" href="#" onclick="setStyleSheet('../assets/css/theme3.css', 0);"></a>
-                <a class="theme4" data-toggle="tooltip" title="Theme Cascade" href="#" onclick="setStyleSheet('../assets/css/theme4.css', 0);"></a>
-            </div>
+            <h5 class="brand-name">{{ \Auth::user()->name }}</h5>
         </div>
         <div class="input-icon">
             <span class="input-icon-addon">
@@ -150,27 +144,19 @@
             </span>
             <input type="text" class="form-control" placeholder="Search...">
         </div>
-        <a href="app-compose.html" class="btn btn-primary btn-block mt-4 mb-2">Create New</a>
+
+        <a href="app-compose.html" class="btn btn-primary btn-block mt-4 mb-2"><i class="fe fe-edit-3"></i> Redactar</a>
         <nav class="sidebar-nav">
             <ul class="metismenu mt-2">
-                <li class="active"><a href="app-email.html"><i class="icon-envelope"></i><span>Inbox</span> <span class="badge badge-primary badge-pill ml-2">14</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-star"></i><span>Starred</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-clock"></i><span>Snoozed</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-cursor"></i><span>Sent</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-envelope-open"></i><span>Draft</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-action-redo"></i><span>Outbox</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-trash"></i><span>Trash</span></a></li>                
-                <li class="g_heading">Labels</li>
-                <li><a href="javascript:void(0);"><span class="status-icon bg-danger"></span><span>WorkShop</span></a></li>
-                <li><a href="javascript:void(0);"><span class="status-icon bg-info"></span><span>PayPal</span></a></li>
-                <li><a href="javascript:void(0);"><span class="status-icon bg-success"></span><span>Reports2019</span></a></li>
-                <li><a href="javascript:void(0);"><span class="status-icon bg-warning"></span><span>Development</span></a></li>
-                <li><a href="javascript:void(0);"><span class="status-icon bg-primary"></span><span>Design</span></a></li>
+                <li class="active"><a href="app-email.html"><i class="icon-envelope"></i><span>Sin Leer</span> <span class="badge badge-primary badge-pill ml-2">14</span></a></li>
+                <li><a href="javascript:void(0);"><i class="icon-envelope-open"></i><span>Leeidos</span></a></li>
+                <li><a href="javascript:void(0);"><i class="icon-trash"></i><span>Borrados</span></a></li>                
             </ul>
         </nav>
     </div>
 
     @yield('content')
+    
 </div>
 
 {{-- JavaScript links --}}

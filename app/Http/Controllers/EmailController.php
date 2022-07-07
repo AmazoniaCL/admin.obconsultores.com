@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Email;
+use App\Models\Cliente;
 use Illuminate\Http\Request;
 
 class EmailController extends Controller
@@ -12,10 +13,11 @@ class EmailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $datos['emails']=Email::get();
-        return view('emails.index',$datos);
+        $cliente = Cliente::find($request->id);
+        $datos=Email::where('cliente_id', $request->id)->get();
+        return view('emails.index',['emails'=>$datos, 'cliente'=>$cliente]);
     }
 
     /**

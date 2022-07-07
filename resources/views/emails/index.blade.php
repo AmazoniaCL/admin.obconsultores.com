@@ -9,19 +9,8 @@
     <div class="page">
         <div class="inbox_body">
             <div class="inbox_list" id="users">
-                <div class="selectgroup w-100">
-                    <label class="selectgroup-item">
-                        <input type="radio" name="intensity" value="low" class="selectgroup-input" checked="">
-                        <span class="selectgroup-button">Primary</span>
-                    </label>
-                    <label class="selectgroup-item">
-                        <input type="radio" name="intensity" value="medium" class="selectgroup-input">
-                        <span class="selectgroup-button">Social</span>
-                    </label>
-                    <label class="selectgroup-item">
-                        <input type="radio" name="intensity" value="high" class="selectgroup-input">
-                        <span class="selectgroup-button">Updates</span>
-                    </label>
+                <div class="">
+                    <h4 class="text-center">{{$cliente->nombre}}</h4>
                 </div>
                 <div class="input-icon mt-1 mb-2">
                     <input type="text" class="form-control search" placeholder="Search for...">
@@ -30,31 +19,56 @@
                     </span>
                 </div>
                 <ul class="right_chat list-unstyled list">
-                    @foreach($emails as $email)
-                    <li class="offline">
-                        <a href="javascript:void(0);" class="media">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Phillip Smith</small> <small>{{$email->created_at->isoFormat('MMMM Do YYYY, h:mm a')}}</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">{{$email->asunto}}</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="fa fa-star text-muted"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
+                    @if(isset($emails))
+                        <li class="offline">
+                            <a href="javascript:void(0);" class="media">
+                                <div class="media-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <p class="name text_ellipsis">No tiene consultas pendientes por revisar.</p>
                                     </div>
                                 </div>
-                                <span class="message">{{$email->mensajes[0]->mensaje}}</span>
-                            </div>
-                        </a>
-                    </li>
-                    @endforeach
+                            </a>
+                        </li>
+                    @else
+                        @foreach($emails as $email)
+                        <li class="offline">
+                            <a href="javascript:void(0);" class="media">
+                                <div class="media-body">
+                                    <div class="d-flex justify-content-between mb-1"><small>Phillip Smith</small> <small>{{$email->created_at->isoFormat('MMMM Do YYYY, h:mm a')}}</small></div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="name text_ellipsis">{{$email->asunto}}</span>
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-2 ml-2">
+                                                <i class="fa fa-star text-muted"></i>
+                                            </div>
+                                            <label class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input">
+                                                <span class="custom-control-label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <span class="message">{{$email->mensajes[0]->mensaje}}</span>
+                                </div>
+                            </a>
+                        </li>
+                        @endforeach
+                    @endif  
                 </ul>
             </div>
             <div class="inbox_content">
+                @if(isset($emails))
+                <div class="card inbox">
+                    <div class="card-body detail">
+                        <div class="detail-header">
+                            <div class="media">
+                                <div class="media-body">
+                                    <p class="mb-0 text-center">No tiene consultas pendientes por revisar.</p>                                     
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @else
                 <div class="card inbox">
                     <div class="d-flex justify-content-between action_bar">
                         <div>
@@ -69,9 +83,6 @@
                     <div class="card-body detail">
                         <div class="detail-header">
                             <div class="media">
-                                <div class="float-left">
-                                    <div class="mr-3"><img src="../assets/images/xs/avatar5.jpg" alt=""></div>
-                                </div>
                                 <div class="media-body">
                                     <p class="mb-0"><strong class="text-muted mr-1">From:</strong><a href="javascript:void(0);">info@example.com</a><span class="text-muted text-sm float-right">12:48, 23.06.2018</span></p>
                                     <p class="mb-0"><strong class="text-muted mr-1">To:</strong>Me <small class="float-right"><i class="fe fe-paperclip mr-1"></i>(2 files, 89.2 KB)</small></p>                                        
@@ -124,6 +135,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>
