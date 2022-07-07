@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.emails')
 
 @section('title_content') Email @endsection
 
@@ -30,13 +30,13 @@
                     </span>
                 </div>
                 <ul class="right_chat list-unstyled list">
+                    @foreach($emails as $email)
                     <li class="offline">
                         <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar1.jpg" alt="">
                             <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Phillip Smith</small> <small>5:15PM</small></div>
+                                <div class="d-flex justify-content-between mb-1"><small>Phillip Smith</small> <small>{{$email->created_at->isoFormat('MMMM Do YYYY, h:mm a')}}</small></div>
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">Need Support</span>
+                                    <span class="name text_ellipsis">{{$email->asunto}}</span>
                                     <div class="d-flex align-items-center">
                                         <div class="mr-2 ml-2">
                                             <i class="fa fa-star text-muted"></i>
@@ -47,169 +47,11 @@
                                         </label>
                                     </div>
                                 </div>
-                                <span class="message">it is a long established fact that a reader will be distracted by the readable content</span>
-                                <span class="badge badge-outline status"></span>
+                                <span class="message">{{$email->mensajes[0]->mensaje}}</span>
                             </div>
                         </a>
                     </li>
-                    <li class="online active">
-                        <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar2.jpg" alt="">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Merri Diamond</small> <small>5:18PM</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">Apply for web Developer</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="icon-paper-clip mr-2 ml-2"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <span class="message">The point of using Lorem Ipsum is that it has a more-or-less normal distribution</span>
-                                <span class="badge badge-outline status"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="offline">
-                        <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar3.jpg" alt="">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Allen Collins</small> <small>5:18PM</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">Balance Withdrawal Failed</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="icon-paper-clip mr-2 ml-2"></i>
-                                            <i class="fa fa-star text-muted"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <span class="message">There are many variations of passages of Lorem Ipsum available, but the majority</span>
-                                <span class="badge badge-outline status"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="offline">
-                        <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar2.jpg" alt="">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Andrew Patrick</small> <small>5:18PM</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">New Project</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="fa fa-star text-muted"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <span class="message">Contrary to popular belief, Lorem Ipsum is not simply random text</span>
-                                <span class="badge badge-outline status"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="offline">
-                        <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar4.jpg" alt="">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Phillip Smith</small> <small>5:15PM</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">Need Support</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="fa fa-star text-muted"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <span class="message">it is a long established fact that a reader will be distracted by the readable content</span>
-                                <span class="badge badge-outline status"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="online">
-                        <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar5.jpg" alt="">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Merri Diamond</small> <small>5:18PM</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">Apply for web Developer</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="icon-paper-clip mr-2 ml-2"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <span class="message">The point of using Lorem Ipsum is that it has a more-or-less normal distribution</span>
-                                <span class="badge badge-outline status"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="offline">
-                        <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar3.jpg" alt="">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Allen Collins</small> <small>5:18PM</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">Balance Withdrawal Failed</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="icon-paper-clip mr-2 ml-2"></i>
-                                            <i class="fa fa-star text-muted"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <span class="message">There are many variations of passages of Lorem Ipsum available, but the majority</span>
-                                <span class="badge badge-outline status"></span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="offline">
-                        <a href="javascript:void(0);" class="media">
-                            <img class="media-object" src="../assets/images/xs/avatar2.jpg" alt="">
-                            <div class="media-body">
-                                <div class="d-flex justify-content-between mb-1"><small>Andrew Patrick</small> <small>5:18PM</small></div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="name text_ellipsis">New Project</span>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-2 ml-2">
-                                            <i class="fa fa-star text-muted"></i>
-                                        </div>
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input">
-                                            <span class="custom-control-label"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <span class="message">Contrary to popular belief, Lorem Ipsum is not simply random text</span>
-                                <span class="badge badge-outline status"></span>
-                            </div>
-                        </a>
-                    </li>
+                    @endforeach
                 </ul>
             </div>
             <div class="inbox_content">
