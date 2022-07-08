@@ -19,7 +19,7 @@
     @include('layouts.barra')
 
     <!-- Notification and  Activity-->
-    {{-- <div id="rightsidebar" class="right_sidebar">
+    <!-- <div id="rightsidebar" class="right_sidebar">
         <a href="javascript:void(0)" class="p-3 settingbar float-right"><i class="fa fa-close"></i></a>
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#notification" aria-expanded="true">Notification</a></li>
@@ -128,7 +128,7 @@
                 </ul>
             </div>
         </div>
-    </div> --}}
+    </div> -->
 
     <!-- Perfil de Usuario -->
     @include('layouts.perfil')
@@ -145,10 +145,10 @@
             <input type="text" class="form-control" placeholder="Search...">
         </div>
 
-        <a href="app-compose.html" class="btn btn-primary btn-block mt-4 mb-2"><i class="fe fe-edit-3"></i> Redactar</a>
+        <a href="{{ route('create-consultas-cliente',$cliente->id)}}" class="btn btn-primary btn-block mt-4 mb-2"><i class="fe fe-edit-3"></i> Redactar</a>
         <nav class="sidebar-nav">
             <ul class="metismenu mt-2">
-                <li class="active"><a href="app-email.html"><i class="icon-envelope"></i><span>Sin Leer</span> <span class="badge badge-primary badge-pill ml-2">14</span></a></li>
+                <li class="active"><a href="app-email.html"><i class="icon-envelope"></i><span>Sin Leer</span></a></li>
                 <li><a href="javascript:void(0);"><i class="icon-envelope-open"></i><span>Leeidos</span></a></li>
                 <li><a href="javascript:void(0);"><i class="icon-trash"></i><span>Borrados</span></a></li>                
             </ul>

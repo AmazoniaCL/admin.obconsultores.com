@@ -21,7 +21,7 @@ class CreateEmailsTable extends Migration
                 ->constrained('users')
                 ->onDelete('cascade');
             $table->foreignId('cliente_id')
-            ->constrained('users')
+            ->constrained('clientes')
             ->onDelete('cascade');
             $table->timestamps();
         });

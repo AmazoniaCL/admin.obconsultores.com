@@ -25,7 +25,7 @@ class CreateActuacionesTable extends Migration
             $table->bigInteger('idsincronizacion')->nullable();
 
             $table->foreignId('procesos_id')
-                ->constrained()
+                ->constrained('procesos')
                 ->onDelete('cascade');
 
             $table->timestamps();

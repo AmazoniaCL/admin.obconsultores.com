@@ -11,4 +11,8 @@ class Cliente extends Model
     public function procesos() {
         return $this->hasMany('App\Models\Proceso', 'clientes_id');
     }
+    public function emails()
+    {
+        return $this->hasMany('App\Models\Email');
+    }
 }

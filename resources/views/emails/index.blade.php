@@ -19,7 +19,7 @@
                     </span>
                 </div>
                 <ul class="right_chat list-unstyled list">
-                    @if(isset($emails))
+                    @if(count($emails)==0)
                         <li class="offline">
                             <a href="javascript:void(0);" class="media">
                                 <div class="media-body">
@@ -47,7 +47,9 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <span class="message">{{$email->mensajes[0]->mensaje}}</span>
+                                    @foreach($email->mensajes as $mensajes)
+                                    <span class="message">{{Str::limit($mensajes->mensaje,50)}}</span>
+                                    @endforeach
                                 </div>
                             </a>
                         </li>
@@ -56,7 +58,7 @@
                 </ul>
             </div>
             <div class="inbox_content">
-                @if(isset($emails))
+                @if(count($emails)==0)
                 <div class="card inbox">
                     <div class="card-body detail">
                         <div class="detail-header">

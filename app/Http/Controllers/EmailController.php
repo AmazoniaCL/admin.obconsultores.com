@@ -25,9 +25,11 @@ class EmailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('emails.create');
+        $cliente = Cliente::find($request->id);
+        $datos=Email::where('cliente_id', $request->id)->get();
+        return view('emails.create',['emails'=>$datos, 'cliente'=>$cliente]);
     }
 
     /**
@@ -38,7 +40,17 @@ class EmailController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user_id = (int)auth()->user()->id;
+        $cliente_id = (int)$request['cliente_id'];
+        $email = Email::create([
+            'asunto'=> $request['asunto'],
+            'estado'=> 'Sin Leer',
+            'user_id'=> $user_id,
+            'cliente_id'=> $cliente_id,
+        ]);
+        if ($email->save()) {
+            return redirect()->route('consultas-cliente', ['id' => $request['cliente_id']]);
+        }
     }
 
     /**

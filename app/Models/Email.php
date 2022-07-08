@@ -12,4 +12,8 @@ class Email extends Model
     {
         return $this->hasMany('App\Models\Email_mensaje');
     }
+    public function cliente()
+    {
+        return $this->belongsTo('App\Models\Cliente');
+    }
 }
