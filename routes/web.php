@@ -99,6 +99,9 @@ Route::group(['middleware' => ['permission:penal|universal']], function () {
 // Rutas para Clientes
 Route::get('/clientes', 'ClientesController@index')->name('clientes')->middleware('cliente');
 Route::get('/clientes/ver/{id}', 'ClientesController@ver')->name('ver-cliente');
+Route::get('/clientes/cosultas/{id}', 'EmailController@index')->name('consultas-cliente');
+Route::get('/clientes/cosultas/create/{id}', 'EmailController@create')->name('create-consultas-cliente');
+Route::post('/clientes/cosultas/store', 'EmailController@store');
 Route::get('/clientes/search/{search}', 'ClientesController@search');
 Route::get('/clientes/ver/{id}/search', 'ClientesController@search_proceso');
 
@@ -164,3 +167,6 @@ Route::group(['middleware' => ['role:admin']], function () {
 });
 
 Route::post('/sincronizar-procesos', 'ProcesosController@sincronizar_procesos');
+Route::get('/testjob', 'ProcesosController@testjob')->name('sincronizacion');
+
+// Rutas Email

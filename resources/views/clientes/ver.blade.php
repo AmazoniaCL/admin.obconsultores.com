@@ -156,6 +156,7 @@
                     <h3 class="card-title">Cliente {{ $cliente->nombre }} </h3>
                     @role('admin')
                         <div class="card-options">
+                            <a href="{{ route('consultas-cliente',$cliente->id)}}" class="btn btn-primary mr-2"><i class="fa fa-envelope mr-2"></i> Consultas </a>
                             <button type="button" class="btn btn-primary mr-2" data-toggle="collapse" data-target="#agg_usuario" aria-expanded="false"> Asignar contraseña </button>
                             <button type="button" class="btn btn-primary mr-2" onclick="habilitar_formularo_correo()"><i class="fa fa-envelope mr-2"></i> Enviar correo </button>
                             <button type="button" class="btn btn-primary" id="btn_habilitar_actualizar_cliente" onclick="habilitar_formularo_cliente()"><i class="fe fe-edit mr-2"></i> Actualizar </button>
