@@ -17,7 +17,7 @@ function sincronizar() {
     .prop('disabled', true);
 
     $.ajax({
-		url: window.location.hostname + '/sincronizar-procesos',
+		url: window.location.host + '/sincronizar-procesos',
         type: 'POST',
         dataType: 'json',
         cache: false,
