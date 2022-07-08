@@ -160,6 +160,7 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/administrador/pagina-web', 'AdminController@pagina_web')->name('pagina-web');
     Route::post('/administrador/pagina-web', 'AdminController@pagina_web_update');
     Route::get('/administrador/sincronizacion', 'AdminController@sincronizacion')->name('sincronizacion');
+    Route::get('/administrador/sincronizacion/{id}', 'AdminController@sincronizacion_ver');
 });
 
-// Route::get('/testjob', 'ProcesosController@testjob')->name('sincronizacion');
+Route::post('/sincronizar-procesos', 'ProcesosController@sincronizar_procesos');

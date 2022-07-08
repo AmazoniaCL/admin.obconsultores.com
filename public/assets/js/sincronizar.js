@@ -4,17 +4,29 @@ $(document).ready(function () {
 
 $.ajaxSetup({
     headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': 'es-419,es;q=0.9',
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
 
 function sincronizar() {
-	$.ajax({
-		url: 'https://consultaprocesos.ramajudicial.gov.co/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=41001408800720200013000',
-        type: 'GET',
+    $('#btn-sincronizar').html(`
+        <div class="spinner-border text-light" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    `)
+    .prop('disabled', true);
+
+    $.ajax({
+		url: '/sincronizar-procesos',
+        type: 'POST',
+        dataType: 'json',
+        cache: false,
 		success: function (data) {
-			console.log(data);
-		}
-    })
+            if(data == 0) $('#alert-empty').show(350);
+            else window.location.href = '/administrador/sincronizacion/' + data;
+		},
+        complete: function() {
+            $('#btn-sincronizar').html(`<span>SINCRONIZAR</span>`).prop('disabled', false);
+        }
+    });
 }

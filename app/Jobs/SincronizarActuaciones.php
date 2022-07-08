@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MensajeCliente;
 use App\Mail\ResponderConsulta;
+use App\Models\Sincronizacion;
+use App\Models\SincronizacionProceso;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,7 +17,6 @@ use Illuminate\Notifications\Action;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 
 class SincronizarActuaciones implements ShouldQueue
@@ -41,17 +42,11 @@ class SincronizarActuaciones implements ShouldQueue
         $procesosnuevos = [];
         $nuevos = [];
 
-        // dd($procesos[0]['clientes']['nombre']);
-
-        Log::info("Job executing");
-
         foreach ($procesos as $proceso) {
             if(strlen((string) $proceso->radicado) != 23) continue;
 
             $ResponseProceso = Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
             $DataProceso = json_decode($ResponseProceso, true);
-
-            // dd($DataProceso);
 
             if(isset($DataProceso['procesos']) && is_array($DataProceso['procesos'])) {
                 $idProceso = $DataProceso['procesos'][0]['idProceso'] ?? null;
@@ -114,16 +109,27 @@ class SincronizarActuaciones implements ShouldQueue
             }
         }
 
-        // dd($procesosnuevos);
+        if(count($nuevos) == 0) return 0;
+
+        $sincronizacion = Sincronizacion::create([
+            'fecha' => date('Y-m-d'),
+            'users_id' => auth()->user()->id,
+        ]);
 
         $mensaje = "Reultado de sincronización ".date('Y-m-d H:i:s')."<br><br><br><br>";
         foreach ($nuevos as $key => $value) {
             $mensaje .= "Proceso ".$procesosnuevos[$key]['tipo']." ".$procesosnuevos[$key]['num_proceso']." de ".$procesosnuevos[$key]['clientes']['nombre']." tiene ".$value." estados nuevos.";
             $mensaje .= "<br><br>";
+
+            SincronizacionProceso::create([
+                'cantidad' => $value,
+                'sincronizaciones_id' => $sincronizacion->id,
+                'procesos_id' => $key
+            ]);
         }
 
-        Mail::to('leicortega@gmail.com')->send(new MensajeCliente($mensaje, 'Sincronización de estados', null, null, null));
+        Mail::to('gerencia@obconsultores.com')->send(new MensajeCliente($mensaje, 'Sincronización de estados', null, null, null));
 
-        echo $mensaje;
+        return $sincronizacion->id;
     }
 }

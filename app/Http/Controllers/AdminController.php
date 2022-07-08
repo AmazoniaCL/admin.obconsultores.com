@@ -8,6 +8,7 @@ use App\Models\Documentos_personal;
 use App\Models\Otro_si;
 use App\Models\Personal;
 use App\Models\Config_pagina;
+use App\Models\Sincronizacion;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -363,7 +364,19 @@ class AdminController extends Controller
     }
 
     public function sincronizacion(Request $request) {
-        return view('administrador.sincronizacion');
+        $data = Sincronizacion::with(['procesos' => function($query) {
+            $query->with('procesos');
+         }])->with('users')->orderBy('id', 'desc')->paginate(20);
+
+        return view('administrador.sincronizacion', [ 'data' => $data ]);
+    }
+
+    public function sincronizacion_ver(Request $request) {
+        $data = Sincronizacion::with(['procesos' => function($query) {
+           $query->with('procesos');
+        }])->with('users')->find($request['id']);
+
+        return view('administrador.sincronizacion_ver', [ 'data' => $data ]);
     }
 
     public function getMenu(Request $request) {

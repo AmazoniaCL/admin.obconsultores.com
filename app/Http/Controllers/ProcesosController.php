@@ -980,9 +980,9 @@ class ProcesosController extends Controller
         return $file->delete();
     }
 
-    public function testjob(Request $request) {
+    public function sincronizar_procesos(Request $request) {
         $job = new SincronizarActuaciones();
-        $job->handle();
+        return $job->handle();
     }
 }
 
