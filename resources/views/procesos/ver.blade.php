@@ -1372,6 +1372,8 @@
                                                         <a href="javascript:;" onclick="archivos_actuacion({{ $actuacion->id }})" class="ml-2 text-info h5"><i class="fa fa-file"></i></a>
                                                         <a href="javascript:;" onclick="update_actuacion({{ $actuacion->id }})" class="ml-2 text-dark h5"><i class="fa fa-pencil"></i></a>
                                                         <a href="javascript:;" onclick="eliminar_actuacion({{ $actuacion->id }})" class="ml-2 text-red h5"><i class="fa fa-close"></i></a>
+                                                    @elseif($actuacion->idsincronizacion)
+                                                        <a href="javascript:;" onclick="archivos_actuacion({{ $actuacion->id }})" class="ml-2 text-info h5"><i class="fa fa-file"></i></a>
                                                     @endif
                                                 @endhasanyrole
                                             </td>

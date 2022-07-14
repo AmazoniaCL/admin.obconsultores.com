@@ -365,9 +365,9 @@ class ProcesosController extends Controller
 
     public function get_archivos_actuacion(Request $request) {
         $files = Anotacion_files::where('actuaciones_id', $request->id)->get()->toArray();
-        $file  = Actuacion::select('anotacion_file')->find($request->id)->toArray();
-
-        array_push($files, $file);
+        //$file = Actuacion::where('id', $request->id)->get()->toArray();
+        $file  = Actuacion::find($request->id)->toArray();
+        array_push($files,$file);
         return $files;
     }
 

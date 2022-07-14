@@ -414,13 +414,15 @@ function archivos_actuacion(id) {
             let html = '';
 
             data.forEach((row, index) => {
+                if(row.anotacion_file == "" || !row.anotacion_file) return true;
+
                 html += `
                     <tr>
                         <td>
                             <b>${ index + 1 }</b>
                         </td>
                         <td>
-                            ${ row.nombre }
+                            ${ ((!row.nombre) ? row.actuacion: row.nombre).slice(0,40)}
                         </td>
                         <td class="text-center">
                             <a href="/storage/${ row.anotacion_file }" target="_blank">
@@ -436,6 +438,9 @@ function archivos_actuacion(id) {
             $('#agg_actuacion_archivos').collapse('show');
             $('#actuaciones_id').val(id);
             $('#content_archivos_actuacion').html(html);
+            $([document.documentElement, document.body]).animate({
+                scrollTop: $("#agg_actuacion_archivos").offset().top - 100
+            }, 500);
 		}
     })
 }
