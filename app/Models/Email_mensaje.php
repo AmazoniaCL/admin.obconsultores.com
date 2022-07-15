@@ -8,7 +8,7 @@ class Email_mensaje extends Model
 {
     protected $table = 'emails_mensajes';
     protected $fillable = ['mensaje','email_id'];
-    public function adjunto()
+    public function adjuntos()
     {
         return $this->hasMany('App\Models\Email_mensaje_adjunto');
     }

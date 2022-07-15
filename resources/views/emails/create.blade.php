@@ -81,7 +81,7 @@
 
                                 <label class="form-label">Mensaje</label>
 
-                                <input type="hidden" name="mensaje" id="mensaje" required/>
+                                <input type="" name="mensaje" id="mensaje" required/>
 
                                 <div class="summernote"></div>
 
