@@ -19,8 +19,10 @@ class EmailController extends Controller
      */
     public function index(Request $request)
     {
+        $estado = 'Sin Leer';
+        if($request->estado){$estado = $request->estado;}
         $cliente = Cliente::find($request->id);
-        $datos=Email::where('cliente_id', $request->id)->get();
+        $datos=Email::where('cliente_id', $request->id)->where('estado',$estado)->get();
         return view('emails.index',['emails'=>$datos, 'cliente'=>$cliente]);
     }
 
@@ -32,7 +34,7 @@ class EmailController extends Controller
     public function create(Request $request)
     {
         $cliente = Cliente::find($request->id);
-        $datos=Email::where('cliente_id', $request->id)->get();
+        $datos=Email::where('cliente_id', $request->id)->where('estado','<>','Borrado')->get();
         return view('emails.create',['emails'=>$datos, 'cliente'=>$cliente]);
     }
 
@@ -66,7 +68,7 @@ class EmailController extends Controller
             'mensaje'=>$request['mensaje']
         ]);
 
-        /* if ($request->file('adjunto_correo')) {
+       /*  if ($request->file('adjunto_correo')) {
             $email->mensajes()->adjuntos()->create([
                 'nombre'=>$nombre_file_adjunto,
                 'file'=>$nombre_completo_file_adjunto,

@@ -145,12 +145,12 @@
             <input type="text" class="form-control" placeholder="Search...">
         </div>
 
-        <a href="{{ route('create-consultas-cliente',$cliente->id)}}" class="btn btn-primary btn-block mt-4 mb-2"><i class="fe fe-edit-3"></i> Redactar</a>
+        <a href="/clientes/cosultas/create/{{$cliente->id}}" class="btn btn-primary btn-block mt-4 mb-2"><i class="fe fe-edit-3"></i> Redactar</a>
         <nav class="sidebar-nav">
             <ul class="metismenu mt-2">
-                <li class="active"><a href="app-email.html"><i class="icon-envelope"></i><span>Sin Leer</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-envelope-open"></i><span>Leeidos</span></a></li>
-                <li><a href="javascript:void(0);"><i class="icon-trash"></i><span>Borrados</span></a></li>                
+                <li class="active"><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Sin Leer"><i class="icon-envelope"></i><span>Sin Leer</span></a></li>
+                <li><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Leido"><i class="icon-envelope-open"></i><span>Leeidos</span></a></li>
+                <li><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Borrado"><i class="icon-trash"></i><span>Borrados</span></a></li>                
             </ul>
         </nav>
     </div>
