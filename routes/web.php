@@ -167,6 +167,6 @@ Route::group(['middleware' => ['role:admin']], function () {
 });
 
 Route::post('/sincronizar-procesos', 'ProcesosController@sincronizar_procesos');
-Route::get('/testjob', 'ProcesosController@testjob');
+Route::get('/testjob', 'ProcesosController@sincronizar_procesos');
 
 // Rutas Email

@@ -38,7 +38,9 @@ class SincronizarActuaciones implements ShouldQueue
      * @return void
      */
     public function handle() {
-        $procesos = Proceso::whereNotNull('radicado')->with('clientes')->get();
+        $procesos = Proceso::whereNotNull('radicado')->with('clientes')->with(['acceso_proceso' => function ($query) {
+            $query->with('user');
+        }])->limit(5)->get();
         $procesosnuevos = [];
         $nuevos = [];
 
@@ -106,6 +108,29 @@ class SincronizarActuaciones implements ShouldQueue
                         }
                     }
                 }
+
+                if(isset($nuevos[$proceso['id']]) && count($nuevos[$proceso['id']]) > 0) {
+                    // Notificar al cliente a quienes tienen acceso al proceso
+                    $correos = [];
+                    if (filter_var($proceso['cliente']['correo'], FILTER_VALIDATE_EMAIL)) {
+                        $correos[] = $proceso['cliente']['correo'];
+                    }
+
+                    foreach ($proceso['acceso_proceso'] as $acceso) {
+                        if (filter_var($acceso['cliente']['email'], FILTER_VALIDATE_EMAIL)) {
+                            $correos[] = $acceso['cliente']['email'];
+                        }
+                    }
+
+                    if(count($correos) > 0) {
+                        $mensaje = "Reultado de sincronización ".date('Y-m-d H:i:s')."<br><br><br><br>";
+                        $mensaje .= "Proceso ".$proceso['tipo']." ".$proceso['radicado']." de ".$proceso['clientes']['nombre']." tiene ".$nuevos[$proceso['id']]." actuaciones nuevas.";
+                        $mensaje .= "<br><br>";
+
+                        Mail::to(implode(",", $correos).',gerencia@obconsultores.com')->send(new MensajeCliente($mensaje, 'Sincronización de actuaciones', null, null, null));
+                    }
+                }
+
             }
         }
 
@@ -118,7 +143,7 @@ class SincronizarActuaciones implements ShouldQueue
 
         $mensaje = "Reultado de sincronización ".date('Y-m-d H:i:s')."<br><br><br><br>";
         foreach ($nuevos as $key => $value) {
-            $mensaje .= "Proceso ".$procesosnuevos[$key]['tipo']." ".$procesosnuevos[$key]['num_proceso']." de ".$procesosnuevos[$key]['clientes']['nombre']." tiene ".$value." estados nuevos.";
+            $mensaje .= "Proceso ".$procesosnuevos[$key]['tipo']." ".$procesosnuevos[$key]['radicado']." de ".$procesosnuevos[$key]['clientes']['nombre']." tiene ".$value." actuaciones nuevas.";
             $mensaje .= "<br><br>";
 
             SincronizacionProceso::create([
@@ -128,7 +153,7 @@ class SincronizarActuaciones implements ShouldQueue
             ]);
         }
 
-        Mail::to('gerencia@obconsultores.com')->send(new MensajeCliente($mensaje, 'Sincronización de estados', null, null, null));
+        Mail::to('gerencia@obconsultores.com')->send(new MensajeCliente($mensaje, 'Sincronización de actuaciones', null, null, null));
 
         return $sincronizacion->id;
     }

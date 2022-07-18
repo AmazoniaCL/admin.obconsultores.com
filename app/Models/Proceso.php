@@ -25,4 +25,8 @@ class Proceso extends Model
     public function archivos() {
         return $this->hasMany('App\Models\Procesos_archivo', 'procesos_id');
     }
+
+    public function acceso_proceso() {
+        return $this->hasMany('App\Models\Sistema\Acceso_proceso', 'procesos_id');
+    }
 }

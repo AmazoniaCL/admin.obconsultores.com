@@ -23,7 +23,9 @@
                         <thead>
                             <tr>
                                 <th>Fecha</th>
+                                <th>Cliente</th>
                                 <th>Radicado</th>
+                                <th>Area</th>
                                 <th>Cantidad</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -35,7 +37,13 @@
                                         <span>{{ $data['fecha'] }}</span>
                                     </td>
                                     <td>
+                                        <span class="c_name ml-0"><span>{{ $proceso['procesos']['clientes']['nombre'] }}</span></span>
+                                    </td>
+                                    <td>
                                         <span class="c_name ml-0"><span>{{ $proceso['procesos']['radicado'] }}</span></span>
+                                    </td>
+                                    <td>
+                                        <span class="c_name ml-0"><span>{{ $proceso['procesos']['tipo'] }}</span></span>
                                     </td>
                                     <td>
                                         <span>{{ $proceso['cantidad'] }}</span>

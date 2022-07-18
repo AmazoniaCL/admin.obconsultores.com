@@ -373,8 +373,12 @@ class AdminController extends Controller
 
     public function sincronizacion_ver(Request $request) {
         $data = Sincronizacion::with(['procesos' => function($query) {
-           $query->with('procesos');
+            $query->with(['procesos' => function($_query) {
+                $_query->with('clientes');
+            }]);
         }])->with('users')->find($request['id']);
+
+        // dd($data);
 
         return view('administrador.sincronizacion_ver', [ 'data' => $data ]);
     }
