@@ -416,13 +416,16 @@ function archivos_actuacion(id) {
             data.forEach((row, index) => {
                 if(row.anotacion_file == "" || !row.anotacion_file) return true;
 
+                let nombrearchivo = (!row.nombre) ? row.actuacion : row.nombre;
+                nombrearchivo = (!nombrearchivo) ? 'Archivo sin nombre ' + (index + 1) : nombrearchivo.slice(0, 40);
+
                 html += `
                     <tr>
                         <td>
                             <b>${ index + 1 }</b>
                         </td>
                         <td>
-                            ${ ((!row.nombre) ? row.actuacion: row.nombre).slice(0,40)}
+                            ${ nombrearchivo }
                         </td>
                         <td class="text-center">
                             <a href="/storage/${ row.anotacion_file }" target="_blank">
