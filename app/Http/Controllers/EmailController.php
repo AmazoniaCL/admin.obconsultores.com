@@ -22,7 +22,7 @@ class EmailController extends Controller
         $estado = 'Sin Leer';
         if($request->estado){$estado = $request->estado;}
         $cliente = Cliente::find($request->id);
-        $datos=Email::where('cliente_id', $request->id)->where('estado',$estado)->get();
+        $datos=Email::where('cliente_id', $request->id)->where('estado',$estado)->orderBy('created_at', 'desc')->get();
         return view('emails.index',['emails'=>$datos, 'cliente'=>$cliente]);
     }
 
@@ -34,7 +34,7 @@ class EmailController extends Controller
     public function create(Request $request)
     {
         $cliente = Cliente::find($request->id);
-        $datos=Email::where('cliente_id', $request->id)->where('estado','<>','Borrado')->get();
+        $datos=Email::where('cliente_id', $request->id)->where('estado','<>','Borrado')->orderBy('created_at', 'desc')->get();
         return view('emails.create',['emails'=>$datos, 'cliente'=>$cliente]);
     }
 
@@ -124,5 +124,12 @@ class EmailController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function get_media(Request $request)
+    {
+        $email=Email::join('emails_mensajes', 'emails.id', '=', 'emails_mensajes.email_id')->join('users', 'users.id', '=', 'emails.user_id')->join('clientes', 'clientes.id', '=', 'emails.cliente_id')->where('emails.id', $request->id)->get();
+        //$mensaje=Email_mensaje::where('email_id', $request->id)->get();
+        return $email;
     }
 }
