@@ -103,6 +103,7 @@ Route::get('/clientes/cosultas/inbox/{id}/{estado?}', 'EmailController@index')->
 Route::get('/clientes/cosultas/create/{id}', 'EmailController@create')->name('create-consultas-cliente');
 Route::post('/clientes/cosultas/store', 'EmailController@store');
 Route::post('/clientes/cosultas/get/media', 'EmailController@get_media');
+Route::post('/clientes/cosultas/estado', 'EmailController@cambio_estado');
 Route::get('/clientes/search/{search}', 'ClientesController@search');
 Route::get('/clientes/ver/{id}/search', 'ClientesController@search_proceso');
 

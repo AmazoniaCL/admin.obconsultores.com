@@ -132,4 +132,13 @@ class EmailController extends Controller
         //$mensaje=Email_mensaje::where('email_id', $request->id)->get();
         return $email;
     }
+    public function cambio_estado(Request $request)
+    {
+        $email = Email::find($request->id);
+
+            $email->update([
+                'estado' => 'Leido',
+            ]);
+        return $email;
+    }
 }

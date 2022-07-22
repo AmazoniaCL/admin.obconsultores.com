@@ -9,6 +9,7 @@ $.ajaxSetup({
 
 function contenido_media(id) {
     //console.log("media id:", id);
+    cambio_de_estado(id);
     $.ajax({
         url: '/clientes/cosultas/get/media',
         type: 'POST',
@@ -70,6 +71,17 @@ function contenido_media(id) {
             $([document.documentElement, document.body]).animate({
                 scrollTop: $("#contenido_email").offset().top - 100
             }, 500);
+        }
+    })
+}
+
+function cambio_de_estado(id) {
+    $.ajax({
+        url: '/clientes/cosultas/estado',
+        type: 'POST',
+        data: { id: id },
+        success: function(data) {
+            console.log(data);
         }
     })
 }
