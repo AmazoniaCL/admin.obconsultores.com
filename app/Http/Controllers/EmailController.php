@@ -135,10 +135,11 @@ class EmailController extends Controller
     public function cambio_estado(Request $request)
     {
         $email = Email::find($request->id);
-
+        if($email->estado != 'Borrado'){
             $email->update([
                 'estado' => 'Leido',
             ]);
+        }
         return $email;
     }
 }
