@@ -48,7 +48,7 @@ class EmailController extends Controller
     {
         if ($request->file('adjunto_correo')) {
             $extension_file_adjunto = pathinfo($request->file('adjunto_correo')->getClientOriginalName(), PATHINFO_EXTENSION);
-            $ruta_file_adjunto = 'docs/clientes/documentos/email';
+            $ruta_file_adjunto = 'docs/clientes/documentos/email/';
             $nombre_file_adjunto = 'adjunto_'.$request['cliente_id'].'.'.$extension_file_adjunto;
             $nombre_completo_file_adjunto = $ruta_file_adjunto.$nombre_file_adjunto;
             Storage::disk('public')->put($nombre_completo_file_adjunto, File::get($request->file('adjunto_correo')));
@@ -68,13 +68,14 @@ class EmailController extends Controller
             'mensaje'=>$request['mensaje']
         ]);
 
-       /*  if ($request->file('adjunto_correo')) {
-            $email->mensajes()->adjuntos()->create([
+       if ($request->file('adjunto_correo')) {
+            $email = Email_mensaje_adjunto::create([
                 'nombre'=>$nombre_file_adjunto,
                 'file'=>$nombre_completo_file_adjunto,
                 'user_id'=> $user_id,
+                'emails_mensaje_id' => $email->id,
             ]);
-        } */
+        }
 
         if ($email->save()) {
             return redirect()->route('consultas-cliente', ['id' => $request['cliente_id']]);
@@ -128,7 +129,12 @@ class EmailController extends Controller
 
     public function get_media(Request $request)
     {
-        $email=Email::join('emails_mensajes', 'emails.id', '=', 'emails_mensajes.email_id')->join('users', 'users.id', '=', 'emails.user_id')->join('clientes', 'clientes.id', '=', 'emails.cliente_id')->where('emails.id', $request->id)->get();
+        $email=Email::join('emails_mensajes', 'emails.id', '=', 'emails_mensajes.email_id')
+            ->join('users', 'users.id', '=', 'emails.user_id')
+            ->join('clientes', 'clientes.id', '=', 'emails.cliente_id')
+            //->join('emails_mensajes_adjuntos', 'emails_mensajes.id', '=', 'emails_mensajes_adjuntos.emails_mensaje_id')
+            ->where('emails.id', $request->id)
+            ->get();
         //$mensaje=Email_mensaje::where('email_id', $request->id)->get();
         return $email;
     }

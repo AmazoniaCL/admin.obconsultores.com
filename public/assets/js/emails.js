@@ -19,6 +19,25 @@ function contenido_media(id) {
             let html = '';
 
             data.forEach((row, index) => {
+
+                let htmlArchivo = ``
+
+                if (row.file) {
+                    htmlArchivo = `
+                    <div class="file_folder">
+                        <a href="/storage/${ row.file }" target="_blank">
+                            <div class="icon">
+                                <i class="fa fa-file-o"></i>
+                            </div>
+                            <div class="file-name">
+                                <p class="mb-0 text-muted">${ (row.file).split("/").pop() }</p>
+                                <small>Size: 68KB</small>
+                            </div>
+                        </a>
+                    </div>
+                    `
+                }
+
                 html += `
                     <div class="card-body detail">
                         <div class="detail-header">
@@ -33,35 +52,7 @@ function contenido_media(id) {
                         <div class="mail-cnt">
                             <p>${ row.mensaje }</p><br>
                             <hr>
-                            <div class="file_folder">
-                                <a href="javascript:void(0);">
-                                    <div class="icon">
-                                        <i class="fa fa-file-excel-o text-success"></i>
-                                    </div>
-                                    <div class="file-name">
-                                        <p class="mb-0 text-muted">Report2017.xls</p>
-                                        <small>Size: 68KB</small>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);">
-                                    <div class="icon">
-                                        <i class="fa fa-file-word-o text-primary"></i>
-                                    </div>
-                                    <div class="file-name">
-                                        <p class="mb-0 text-muted">Report2017.doc</p>
-                                        <small>Size: 68KB</small>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0);">
-                                    <div class="icon">
-                                        <i class="fa fa-file-pdf-o text-danger"></i>
-                                    </div>
-                                    <div class="file-name">
-                                        <p class="mb-0 text-muted">Report2017.pdf</p>
-                                        <small>Size: 68KB</small>
-                                    </div>
-                                </a>
-                            </div>
+                            ` + htmlArchivo + `
                         </div>
                     </div>
                 `;
