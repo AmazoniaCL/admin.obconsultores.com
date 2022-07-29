@@ -1,5 +1,22 @@
 $(document).ready(function() {
+    // summernote editor
+    $('.summernote').summernote({
+        lang: 'es-ES',
+        height: 280,
+        focus: true,
+        onpaste: function() {
+            alert('You have pasted something to the editor');
+        }
+    });
 
+    $('.inline-editor').summernote({
+        airMode: true
+    });
+    
+    $('#form_enviar_Consulta').submit(function () {
+        let content = $('.note-editable').html();
+        $('#mensaje').val(content);
+    });
 })
 $.ajaxSetup({
     headers: {

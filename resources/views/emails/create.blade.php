@@ -9,6 +9,7 @@
     <script src="{{ asset('assets/plugins/summernote/dist/lang/summernote-es-ES.js') }}"></script>
     <script src="{{ asset('assets/js/consultas.js') }}"></script>
     <script src="{{ asset('assets/js/cliente.js') }}"></script>
+    <script src="{{ asset('assets/js/emails.js') }}"></script>
 @endsection
 
 @section('content')
@@ -73,6 +74,11 @@
                                 <h3 class="card-title">Enviar Consulta a {{ $cliente->nombre }} </h3>
                             </div>
                             <div class="card-body">
+                                @if (session()->has('mostrar_alerta') && session('mostrar_alerta') == 1)
+                                    <div class="alert alert-{{ session('tipo') }}" role="alert">
+                                        <strong>{{ session('mensaje') }}</strong>
+                                    </div>
+                                @endif
 
                                 <div class="form-group">
                                     <label for="asunto" class="form-label">Asunto</label>
@@ -81,14 +87,14 @@
 
                                 <label class="form-label">Mensaje</label>
 
-                                <input type="" name="mensaje" id="mensaje" required/>
+                                <input type="hidden" name="mensaje" id="mensaje" required/>
 
                                 <div class="summernote"></div>
 
                                 <div class="col-md-12 mt-2">
                                     <div class="form-group">
                                         <label class="form-label">Adjunto</label>
-                                        <input type="file" class="form-control" accept="application/pdf,image/png,image/jpg,image/jpeg" name="adjunto_correo" id="adjunto_correo" />
+                                        <input type="file" class="form-control" accept="application/pdf,image/png,image/jpg,image/jpeg" name="adjunto_correo[]" id="adjunto_correo" multiple />
                                     </div>
                                 </div>
 

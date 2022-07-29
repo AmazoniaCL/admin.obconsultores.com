@@ -9,6 +9,7 @@ use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
 
 class EmailController extends Controller
 {
@@ -46,13 +47,7 @@ class EmailController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->file('adjunto_correo')) {
-            $extension_file_adjunto = pathinfo($request->file('adjunto_correo')->getClientOriginalName(), PATHINFO_EXTENSION);
-            $ruta_file_adjunto = 'docs/clientes/documentos/email/';
-            $nombre_file_adjunto = 'adjunto_'.$request['cliente_id'].'.'.$extension_file_adjunto;
-            $nombre_completo_file_adjunto = $ruta_file_adjunto.$nombre_file_adjunto;
-            Storage::disk('public')->put($nombre_completo_file_adjunto, File::get($request->file('adjunto_correo')));
-        }
+        $date = Carbon::now('America/Bogota');
 
         $user_id = (int)auth()->user()->id;
         $cliente_id = (int)$request['cliente_id'];
@@ -64,17 +59,52 @@ class EmailController extends Controller
             'cliente_id'=> $cliente_id,
         ]);
 
-        $email->mensajes()->create([
-            'mensaje'=>$request['mensaje']
+        if(!$email->save()) {
+            return redirect()->back()->with([
+                'mostrar_alerta' => 1,
+                'tipo' => 'danger',
+                'mensaje' => 'Error creando consulta'
+            ]);
+        }
+
+        $mensaje = Email_mensaje::create([
+            'mensaje' => $request['mensaje'],
+            'email_id' => $email->id
         ]);
 
-       if ($request->file('adjunto_correo')) {
-            $email = Email_mensaje_adjunto::create([
-                'nombre'=>$nombre_file_adjunto,
-                'file'=>$nombre_completo_file_adjunto,
-                'user_id'=> $user_id,
-                'emails_mensaje_id' => $email->id,
+        if(!$mensaje->save()) {
+            $email->delete();
+
+            return redirect()->back()->with([
+                'mostrar_alerta' => 1,
+                'tipo' => 'danger',
+                'mensaje' => 'Error creando mensajes de la consulta'
             ]);
+        }
+
+        $files = $request->file('adjunto_correo');
+
+        if ($files) {
+            foreach ($files as $key => $file) {
+                $extension_file_adjunto = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $ruta_file_adjunto = 'docs/clientes/documentos/email/';
+                $nombre_file_adjunto = 'adjunto_'.$request['cliente_id_'].'_'.$date->format('YmdHis').'.'.$extension_file_adjunto;
+                $nombre_completo_file_adjunto = $ruta_file_adjunto.$nombre_file_adjunto;
+                $file = Storage::disk('public')->put($nombre_completo_file_adjunto, File::get($file));
+
+                if($file) {
+                    $adjunto_result = Email_mensaje_adjunto::create([
+                        'nombre'=>$nombre_file_adjunto,
+                        'file'=>$nombre_completo_file_adjunto,
+                        'user_id'=> $user_id,
+                        'emails_mensaje_id' => $mensaje->id,
+                    ]);
+
+                    if(!$adjunto_result->save()) {
+                        Storage::disk('public')->delete($nombre_completo_file_adjunto);
+                    }
+                }
+            }
         }
 
         if ($email->save()) {
@@ -129,6 +159,10 @@ class EmailController extends Controller
 
     public function get_media(Request $request)
     {
+        $email = Email::with(['cliente','mensajes.adjuntos'])->find($request->id);
+
+        return $email;
+
         $email=Email::join('emails_mensajes', 'emails.id', '=', 'emails_mensajes.email_id')
             ->join('users', 'users.id', '=', 'emails.user_id')
             ->join('clientes', 'clientes.id', '=', 'emails.cliente_id')

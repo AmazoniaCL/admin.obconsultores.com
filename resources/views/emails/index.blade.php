@@ -49,7 +49,7 @@
                                         </div>
                                     </div>
                                     @foreach($email->mensajes as $mensajes)
-                                    <span class="message">{{Str::limit($mensajes->mensaje,50)}}</span>
+                                    <span class="message">{!!Str::limit($mensajes->mensaje,50)!!}</span>
                                     @endforeach
                                 </div>
                             </a>
