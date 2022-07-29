@@ -12,7 +12,7 @@ $(document).ready(function() {
     $('.inline-editor').summernote({
         airMode: true
     });
-    
+
     $('#form_enviar_Consulta').submit(function () {
         let content = $('.note-editable').html();
         $('#mensaje').val(content);
@@ -49,7 +49,7 @@ function contenido_media(id) {
                             <p class="mb-0 text-muted">${ adjuntos.nombre }</p>
                         </div>
                     </a>
-                   `; 
+                   `;
                    count_archivos +=1;
                 });
                 mensajes +=`<div class="mail-cnt">
@@ -69,7 +69,7 @@ function contenido_media(id) {
                         <div class="media">
                             <div class="media-body">
                                 <p class="mb-0"><strong class="text-muted mr-1">From:</strong><a href="javascript:void(0);">${ data.cliente.nombre }</a><span class="text-muted text-sm float-right">${ data.updated_at }</span></p>
-                                <p class="mb-0"><strong class="text-muted mr-1">To:</strong>nombre<small class="float-right"><i class="fe fe-paperclip mr-1"></i>(${count_archivos} files)</small></p>                                        
+                                <p class="mb-0"><strong class="text-muted mr-1">To:</strong>nombre<small class="float-right"><i class="fe fe-paperclip mr-1"></i>(${count_archivos} files)</small></p>
                             </div>
                         </div>
                     </div>
@@ -81,6 +81,8 @@ function contenido_media(id) {
             $([document.documentElement, document.body]).animate({
                 scrollTop: $("#contenido_email").offset().top - 100
             }, 500);
+            document.getElementById("mensaje_id").value = data.id;
+            document.getElementById('formulario_respuesta').style.display = '';
         }
     })
 }

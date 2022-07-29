@@ -51,7 +51,7 @@ class EmailController extends Controller
 
         $user_id = (int)auth()->user()->id;
         $cliente_id = (int)$request['cliente_id'];
-        
+
         $email = Email::create([
             'asunto'=> $request['asunto'],
             'estado'=> 'Sin Leer',
@@ -108,6 +108,60 @@ class EmailController extends Controller
         }
 
         if ($email->save()) {
+            return redirect()->route('consultas-cliente', ['id' => $request['cliente_id']]);
+        }
+    }
+
+    public function store_mensaje(Request $request)
+    {
+        $date = Carbon::now('America/Bogota');
+        $user_id = (int)auth()->user()->id;
+
+        $mensaje = Email_mensaje::create([
+            'mensaje' => $request['mensaje'],
+            'email_id' => $request['mensaje_id'],
+        ]);
+
+        if(!$mensaje->save()) {
+            return redirect()->back()->with([
+                'mostrar_alerta' => 1,
+                'tipo' => 'danger',
+                'mensaje' => 'Error creando mensajes de la consulta'
+            ]);
+        }
+
+        $files = $request->file('adjunto_correo');
+
+        if ($files) {
+            foreach ($files as $key => $file) {
+                $extension_file_adjunto = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $ruta_file_adjunto = 'docs/clientes/documentos/email/';
+                $nombre_file_adjunto = 'adjunto_'.$request['cliente_id_'].'_'.$date->format('YmdHis').'.'.$extension_file_adjunto;
+                $nombre_completo_file_adjunto = $ruta_file_adjunto.$nombre_file_adjunto;
+                $file = Storage::disk('public')->put($nombre_completo_file_adjunto, File::get($file));
+
+                if($file) {
+                    $adjunto_result = Email_mensaje_adjunto::create([
+                        'nombre'=>$nombre_file_adjunto,
+                        'file'=>$nombre_completo_file_adjunto,
+                        'user_id'=> $user_id,
+                        'emails_mensaje_id' => $mensaje->id,
+                    ]);
+
+                    if(!$adjunto_result->save()) {
+                        Storage::disk('public')->delete($nombre_completo_file_adjunto);
+                    }
+                }
+            }
+        }
+
+        if ($mensaje->save()) {
+            $email = Email::find($request['mensaje_id']);
+            if($email->estado != 'Borrado'){
+                $email->update([
+                    'estado' => 'Sin Leer',
+                ]);
+            }
             return redirect()->route('consultas-cliente', ['id' => $request['cliente_id']]);
         }
     }
@@ -169,6 +223,17 @@ class EmailController extends Controller
         if($email->estado != 'Borrado'){
             $email->update([
                 'estado' => 'Leido',
+            ]);
+        }
+        return $email;
+    }
+
+    public function reactivar_email(Request $request)
+    {
+        $email = Email::find($request->id);
+        if($email->estado != 'Borrado'){
+            $email->update([
+                'estado' => 'Sin Leer',
             ]);
         }
         return $email;

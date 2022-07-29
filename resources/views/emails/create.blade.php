@@ -2,7 +2,9 @@
 
 @section('title_content') Email @endsection
 
-@section('myStyles') <link rel="stylesheet" href="{{ asset('assets/plugins/summernote/dist/summernote.css') }}"/> @endsection
+@section('myStyles')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/summernote/dist/summernote.css') }}"/>
+@endsection
 
 @section('myScripts')
     <script src="{{ asset('assets/bundles/summernote.bundle.js') }}"></script>
@@ -61,7 +63,7 @@
                             </a>
                         </li>
                         @endforeach
-                    @endif  
+                    @endif
                 </ul>
             </div>
             <div class="inbox_content">

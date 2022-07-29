@@ -2,7 +2,13 @@
 
 @section('title_content') Email @endsection
 
+@section('myStyles')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/summernote/dist/summernote.css') }}"/>
+@endsection
+
 @section('myScripts')
+    <script src="{{ asset('assets/bundles/summernote.bundle.js') }}"></script>
+    <script src="{{ asset('assets/plugins/summernote/dist/lang/summernote-es-ES.js') }}"></script>
     <script src="{{ asset('assets/js/emails.js') }}"></script>
 @endsection
 
@@ -55,7 +61,7 @@
                             </a>
                         </li>
                         @endforeach
-                    @endif  
+                    @endif
                 </ul>
             </div>
             <div class="inbox_content">
@@ -65,7 +71,7 @@
                         <div class="detail-header">
                             <div class="media">
                                 <div class="media-body">
-                                    <p class="mb-0 text-center">No tiene consultas pendientes por revisar.</p>                                     
+                                    <p class="mb-0 text-center">No tiene consultas pendientes por revisar.</p>
                                 </div>
                             </div>
                         </div>
@@ -73,9 +79,47 @@
                 </div>
                 @else
                 <div class="card inbox" id="contenido_email">
-                    
+
                 </div>
                 @endif
+                <div class="card">
+                    <div class="card-body mail_compose" id="formulario_respuesta" style="display:none;">
+                        <form action="/clientes/cosultas/store_mensaje" id="form_enviar_Consulta" method="post" enctype="multipart/form-data">
+                            @csrf
+
+                            <div class="card-header">
+                                <h3 class="card-title">Responder</h3>
+                            </div>
+                            <div class="card-body">
+                                @if (session()->has('mostrar_alerta') && session('mostrar_alerta') == 1)
+                                    <div class="alert alert-{{ session('tipo') }}" role="alert">
+                                        <strong>{{ session('mensaje') }}</strong>
+                                    </div>
+                                @endif
+
+                                <label class="form-label">Mensaje</label>
+
+                                <input type="hidden" name="mensaje" id="mensaje" required/>
+
+                                <div class="summernote"></div>
+
+                                <div class="col-md-12 mt-2">
+                                    <div class="form-group">
+                                        <label class="form-label">Adjunto</label>
+                                        <input type="file" class="form-control" accept="application/pdf,image/png,image/jpg,image/jpeg" name="adjunto_correo[]" id="adjunto_correo" multiple />
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="mensaje_id" id="mensaje_id" value="">
+                                <input type="hidden" name="cliente_id" id="cliente_id" value="{{ $cliente->id }}">
+
+                                <div class="row justify-content-center">
+                                    <button type="submit" class="btn btn-success btn-lg mt-3" id="btn_enviar_mensaje">Responder</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
