@@ -160,18 +160,9 @@ class EmailController extends Controller
     public function get_media(Request $request)
     {
         $email = Email::with(['cliente','mensajes.adjuntos'])->find($request->id);
-
-        return $email;
-
-        $email=Email::join('emails_mensajes', 'emails.id', '=', 'emails_mensajes.email_id')
-            ->join('users', 'users.id', '=', 'emails.user_id')
-            ->join('clientes', 'clientes.id', '=', 'emails.cliente_id')
-            //->join('emails_mensajes_adjuntos', 'emails_mensajes.id', '=', 'emails_mensajes_adjuntos.emails_mensaje_id')
-            ->where('emails.id', $request->id)
-            ->get();
-        //$mensaje=Email_mensaje::where('email_id', $request->id)->get();
         return $email;
     }
+
     public function cambio_estado(Request $request)
     {
         $email = Email::find($request->id);
