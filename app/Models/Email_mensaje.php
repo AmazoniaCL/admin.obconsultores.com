@@ -10,7 +10,7 @@ class Email_mensaje extends Model
     protected $fillable = ['mensaje','email_id'];
     public function adjuntos()
     {
-        return $this->hasMany('App\Models\Email_mensaje_adjunto');
+        return $this->hasMany('App\Models\Email_mensaje_adjunto', 'emails_mensaje_id');
     }
     public function email()
     {
