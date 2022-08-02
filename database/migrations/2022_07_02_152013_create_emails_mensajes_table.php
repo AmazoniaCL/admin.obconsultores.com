@@ -16,9 +16,15 @@ class CreateEmailsMensajesTable extends Migration
         Schema::create('emails_mensajes', function (Blueprint $table) {
             $table->id();
             $table->longText('mensaje')->nullable();
+
             $table->foreignId('email_id')
                 ->constrained('emails')
                 ->onDelete('cascade');
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }

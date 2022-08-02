@@ -21,10 +21,13 @@ class EmailController extends Controller
     public function index(Request $request)
     {
         $estado = 'Sin Leer';
-        if($request->estado){$estado = $request->estado;}
+        if($request->estado) $estado = $request->estado;
         $cliente = Cliente::find($request->id);
-        $datos=Email::where('cliente_id', $request->id)->where('estado',$estado)->orderBy('created_at', 'desc')->get();
-        return view('emails.index',['emails'=>$datos, 'cliente'=>$cliente]);
+        $datos = Email::with(['mensajes' => function ($q) {
+            $q->orderBy('created_at', 'desc');
+        }])->where('cliente_id', $request->id)->where('estado', $estado)->orderBy('created_at', 'desc')->get();
+
+        return view('emails.index',['emails' => $datos, 'cliente' => $cliente]);
     }
 
     /**
@@ -69,7 +72,8 @@ class EmailController extends Controller
 
         $mensaje = Email_mensaje::create([
             'mensaje' => $request['mensaje'],
-            'email_id' => $email->id
+            'email_id' => $email->id,
+            'user_id'=> $user_id,
         ]);
 
         if(!$mensaje->save()) {
@@ -96,7 +100,6 @@ class EmailController extends Controller
                     $adjunto_result = Email_mensaje_adjunto::create([
                         'nombre'=>$nombre_file_adjunto,
                         'file'=>$nombre_completo_file_adjunto,
-                        'user_id'=> $user_id,
                         'emails_mensaje_id' => $mensaje->id,
                     ]);
 
@@ -120,6 +123,7 @@ class EmailController extends Controller
         $mensaje = Email_mensaje::create([
             'mensaje' => $request['mensaje'],
             'email_id' => $request['mensaje_id'],
+            'user_id'=> $user_id,
         ]);
 
         if(!$mensaje->save()) {
@@ -144,7 +148,6 @@ class EmailController extends Controller
                     $adjunto_result = Email_mensaje_adjunto::create([
                         'nombre'=>$nombre_file_adjunto,
                         'file'=>$nombre_completo_file_adjunto,
-                        'user_id'=> $user_id,
                         'emails_mensaje_id' => $mensaje->id,
                     ]);
 

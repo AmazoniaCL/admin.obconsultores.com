@@ -21,11 +21,6 @@ class CreateEmailsMensajesAdjuntosTable extends Migration
             $table->foreignId('emails_mensaje_id')
             ->constrained('emails_mensajes')
             ->cascadeOnDelete();
-            
-            $table->foreignId('user_id')
-            ->constrained('users')  
-            ->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

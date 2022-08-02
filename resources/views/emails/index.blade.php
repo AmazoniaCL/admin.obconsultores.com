@@ -54,9 +54,14 @@
                                             </label>
                                         </div>
                                     </div>
-                                    @foreach($email->mensajes as $mensajes)
+                                    @if ($email->mensajes[0])
+                                        <span class="message">{!! Str::limit($email->mensajes[0]->mensaje, 50) !!}</span>
+                                    @else
+                                        <span class="message">ERROR LEYENDO MENSAJES</span>
+                                    @endif
+                                    {{-- @foreach($email->mensajes as $mensajes)
                                         <span class="message">{!!Str::limit($mensajes->mensaje,50)!!}</span>
-                                    @endforeach
+                                    @endforeach --}}
                                 </div>
                             </a>
                         </li>

@@ -67,7 +67,7 @@
                             <small>You received a new oder from Tina.</small>
                             <small class="text-muted">11:35</small>
                         </div>
-                    </li>                                   
+                    </li>
                 </ul>
             </div>
             <div role="tabpanel" class="tab-pane  " id="activity" aria-expanded="false">
@@ -94,11 +94,11 @@
                         <div class="desc">
                             <h3>Developer Team</h3>
                             <h4>Hangouts</h4>
-                            <ul class="list-unstyled team-info margin-0 p-t-5">                                            
+                            <ul class="list-unstyled team-info margin-0 p-t-5">
                                 <li><img src="../assets/images/xs/avatar1.jpg" alt="Avatar"></li>
                                 <li><img src="../assets/images/xs/avatar2.jpg" alt="Avatar"></li>
                                 <li><img src="../assets/images/xs/avatar3.jpg" alt="Avatar"></li>
-                                <li><img src="../assets/images/xs/avatar4.jpg" alt="Avatar"></li>                                            
+                                <li><img src="../assets/images/xs/avatar4.jpg" alt="Avatar"></li>
                             </ul>
                         </div>
                     </li>
@@ -148,15 +148,19 @@
         <a href="/clientes/cosultas/create/{{$cliente->id}}" class="btn btn-primary btn-block mt-4 mb-2"><i class="fe fe-edit-3"></i> Redactar</a>
         <nav class="sidebar-nav">
             <ul class="metismenu mt-2">
-                <li class="active"><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Sin Leer"><i class="icon-envelope"></i><span>Sin Leer</span></a></li>
-                <li><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Leido"><i class="icon-envelope-open"></i><span>Leeidos</span></a></li>
-                <li><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Borrado"><i class="icon-trash"></i><span>Borrados</span></a></li>                
+                <li
+                    class="{{ Request::is('clientes/cosultas/inbox/'.$cliente->id.'/Sin Leer') ? 'active' : '' }}
+                            {{ Request::is('clientes/cosultas/inbox/'.$cliente->id.'') ? 'active' : '' }}">
+                        <a href="/clientes/cosultas/inbox/{{$cliente->id}}/Sin Leer"><i class="icon-envelope"></i><span>Sin Leer</span></a>
+                </li>
+                <li class="{{ Request::is('clientes/cosultas/inbox/'.$cliente->id.'/Leido') ? 'active' : '' }}"><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Leido"><i class="icon-envelope-open"></i><span>Leeidos</span></a></li>
+                <li class="{{ Request::is('clientes/cosultas/inbox/'.$cliente->id.'/Borrado') ? 'active' : '' }}"><a href="/clientes/cosultas/inbox/{{$cliente->id}}/Borrado"><i class="icon-trash"></i><span>Borrados</span></a></li>
             </ul>
         </nav>
     </div>
 
     @yield('content')
-    
+
 </div>
 
 {{-- JavaScript links --}}
