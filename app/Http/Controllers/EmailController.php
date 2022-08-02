@@ -25,7 +25,9 @@ class EmailController extends Controller
         $cliente = Cliente::find($request->id);
         $datos = Email::with(['mensajes' => function ($q) {
             $q->orderBy('created_at', 'desc');
-        }])->where('cliente_id', $request->id)->where('estado', $estado)->orderBy('created_at', 'desc')->get();
+        }])->with('user')->where('cliente_id', $request->id)->where('estado', $estado)->orderBy('created_at', 'desc')->get();
+
+        // dd($datos);
 
         return view('emails.index',['emails' => $datos, 'cliente' => $cliente]);
     }
@@ -216,7 +218,7 @@ class EmailController extends Controller
 
     public function get_media(Request $request)
     {
-        $email = Email::with(['cliente','mensajes.adjuntos'])->find($request->id);
+        $email = Email::with(['cliente','mensajes.adjuntos','mensajes.user','user'])->find($request->id);
         return $email;
     }
 

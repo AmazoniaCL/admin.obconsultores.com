@@ -24,7 +24,13 @@ $.ajaxSetup({
     }
 });
 
-function contenido_media(id) {
+function contenido_media(id, el = null) {
+    $('.offline').each(function (index, el) {
+        $(el).removeClass('active');
+    });
+
+    $(el).parent().addClass('active');
+
     //console.log("media id:", id);
     cambio_de_estado(id);
     $.ajax({
@@ -39,7 +45,7 @@ function contenido_media(id) {
             let count_archivos = 0;
 
             data.mensajes.forEach((row, index) => {
-                row.adjuntos.forEach((adjuntos,index)=>{
+                row.adjuntos.forEach((adjuntos, index)=>{
                    archivos += `
                     <a href="/storage/${ adjuntos.file }" target="_blank">
                         <div class="icon">
@@ -52,13 +58,22 @@ function contenido_media(id) {
                    `;
                    count_archivos +=1;
                 });
-                mensajes +=`<div class="mail-cnt">
-                    <p>${row.mensaje}</p><br>
-                    <div class="file_folder">
-                        ` + archivos + `
-                    </div>
-                    <hr>
-                </div>`;
+
+                mensajes +=`<div class="mail-cnt p-0 m-0">
+                                <div class="detail-header">
+                                    <div class="media">
+                                        <div class="media-body">
+                                            <p class="mb-0"><strong class="text-muted mr-1">Enviado por:</strong><a href="javascript:void(0);">${ row.user.name }</a><span class="text-muted text-sm float-right">${ moment(row.updated_at).format('YYYY/MM/DD h:mm:ss a') }</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p>${row.mensaje}</p><br>
+                                <div class="file_folder">
+                                    ` + archivos + `
+                                </div>
+                                <hr>
+                            </div>`;
                 archivos ='';
             });
 
@@ -66,12 +81,6 @@ function contenido_media(id) {
                 <div class="card-body detail">
                     <div class="detail-header">
                         <h4>${ data.asunto }</h4>
-                        <div class="media">
-                            <div class="media-body">
-                                <p class="mb-0"><strong class="text-muted mr-1">From:</strong><a href="javascript:void(0);">${ data.cliente.nombre }</a><span class="text-muted text-sm float-right">${ data.updated_at }</span></p>
-                                <p class="mb-0"><strong class="text-muted mr-1">To:</strong>nombre<small class="float-right"><i class="fe fe-paperclip mr-1"></i>(${count_archivos} files)</small></p>
-                            </div>
-                        </div>
                     </div>
                     `+mensajes+`
                 </div>

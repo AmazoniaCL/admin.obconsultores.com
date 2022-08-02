@@ -7,6 +7,7 @@
 @endsection
 
 @section('myScripts')
+    <script src="{{ asset('assets/plugins/fullcalendar/moment.min.js') }}"></script>
     <script src="{{ asset('assets/bundles/summernote.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/dist/lang/summernote-es-ES.js') }}"></script>
     <script src="{{ asset('assets/js/emails.js') }}"></script>
@@ -39,7 +40,7 @@
                     @else
                         @foreach($emails as $email)
                         <li class="offline">
-                            <a href="javascript:;" onclick="contenido_media({{ $email->id }})" class="media">
+                            <a href="javascript:;" onclick="contenido_media({{ $email->id }}, this)" class="media">
                                 <div class="media-body">
                                     <div class="d-flex justify-content-between mb-1"><small>{{$email->estado}}</small> <small>{{$email->created_at->isoFormat('MMMM Do YYYY, h:mm a')}}</small></div>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -54,11 +55,11 @@
                                             </label>
                                         </div>
                                     </div>
-                                    @if ($email->mensajes[0])
+                                    @isset ($email->mensajes[0])
                                         <span class="message">{!! Str::limit($email->mensajes[0]->mensaje, 50) !!}</span>
                                     @else
                                         <span class="message">ERROR LEYENDO MENSAJES</span>
-                                    @endif
+                                    @endisset
                                     {{-- @foreach($email->mensajes as $mensajes)
                                         <span class="message">{!!Str::limit($mensajes->mensaje,50)!!}</span>
                                     @endforeach --}}

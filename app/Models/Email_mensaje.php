@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Email_mensaje extends Model
 {
     protected $table = 'emails_mensajes';
-    protected $fillable = ['mensaje','email_id','users_id'];
+    protected $fillable = ['mensaje','email_id','user_id'];
 
     public function adjuntos() {
         return $this->hasMany('App\Models\Email_mensaje_adjunto', 'emails_mensaje_id');
