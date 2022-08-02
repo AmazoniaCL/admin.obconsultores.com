@@ -40,19 +40,19 @@ class SincronizarActuaciones implements ShouldQueue
     public function handle() {
         $procesos = Proceso::whereNotNull('radicado')->with('clientes')->with(['acceso_proceso' => function ($query) {
             $query->with('user');
-        }])->limit(5)->get();
+        }])->get();
         $procesosnuevos = [];
         $nuevos = [];
 
         foreach ($procesos as $proceso) {
             if(strlen((string) $proceso->radicado) != 23) continue;
 
-            $ResponseProceso = Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
+            $ResponseProceso = Http::timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
             $DataProceso = json_decode($ResponseProceso, true);
 
             if(isset($DataProceso['procesos']) && is_array($DataProceso['procesos'])) {
                 $idProceso = $DataProceso['procesos'][0]['idProceso'] ?? null;
-                $ResponseActuaciones = Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $idProceso . '?pagina=1');
+                $ResponseActuaciones = Http::timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $idProceso . '?pagina=1');
                 $DataActuaciones = json_decode($ResponseActuaciones, true);
 
                 // dd($DataActuaciones);
@@ -82,7 +82,7 @@ class SincronizarActuaciones implements ShouldQueue
                 if(isset($DataActuaciones['paginacion']['cantidadPaginas']) && $DataActuaciones['paginacion']['cantidadPaginas'] > 1) {
                     for ($i = 2; $i <= $DataActuaciones['paginacion']['cantidadPaginas']; $i++) {
                         $idProceso = $DataProceso['procesos'][0]['idProceso'] ?? null;
-                        $ResponseActuaciones =  Http::get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $DataProceso['procesos'][0]['idProceso'] . '?pagina=' . $i);
+                        $ResponseActuaciones =  Http::timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $DataProceso['procesos'][0]['idProceso'] . '?pagina=' . $i);
                         $DataActuaciones = json_decode($ResponseActuaciones, true);
 
                         if(is_array($DataActuaciones['actuaciones'])) {
@@ -109,16 +109,18 @@ class SincronizarActuaciones implements ShouldQueue
                     }
                 }
 
-                if(isset($nuevos[$proceso['id']]) && count($nuevos[$proceso['id']]) > 0) {
+                if(isset($nuevos[$proceso['id']]) && $nuevos[$proceso['id']] > 0) {
+
+                    // dd($proceso);s
                     // Notificar al cliente a quienes tienen acceso al proceso
-                    $correos = [];
-                    if (filter_var($proceso['cliente']['correo'], FILTER_VALIDATE_EMAIL)) {
-                        $correos[] = $proceso['cliente']['correo'];
+                    $correos = ['gerencia@obconsultores.com', 'leicortega@gmail.com'];
+                    if (isset($proceso['clientes']['correo']) && filter_var($proceso['clientes']['correo'], FILTER_VALIDATE_EMAIL)) {
+                        $correos[] = $proceso['clientes']['correo'];
                     }
 
                     foreach ($proceso['acceso_proceso'] as $acceso) {
-                        if (filter_var($acceso['cliente']['email'], FILTER_VALIDATE_EMAIL)) {
-                            $correos[] = $acceso['cliente']['email'];
+                        if (isset($acceso['user']['email']) && filter_var($acceso['user']['email'], FILTER_VALIDATE_EMAIL)) {
+                            $correos[] = $acceso['user']['email'];
                         }
                     }
 
@@ -127,7 +129,16 @@ class SincronizarActuaciones implements ShouldQueue
                         $mensaje .= "Proceso ".$proceso['tipo']." ".$proceso['radicado']." de ".$proceso['clientes']['nombre']." tiene ".$nuevos[$proceso['id']]." actuaciones nuevas.";
                         $mensaje .= "<br><br>";
 
-                        Mail::to(implode(",", $correos).',gerencia@obconsultores.com')->send(new MensajeCliente($mensaje, 'Sincronización de actuaciones', null, null, null));
+                        $correosEnviar = array_unique($correos);
+
+                        // dd($correosEnviar);
+
+                        try {
+                            Mail::to(implode(",", $correosEnviar))->send(new MensajeCliente($mensaje, 'Sincronización de actuaciones', null, null, null));
+                        } catch (\Throwable $th) {
+                            //throw $th;
+                        }
+
                     }
                 }
 
