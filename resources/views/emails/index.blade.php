@@ -45,15 +45,6 @@
                                     <div class="d-flex justify-content-between mb-1"><small>{{$email->estado}}</small> <small>{{$email->created_at->isoFormat('MMMM Do YYYY, h:mm a')}}</small></div>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="name text_ellipsis">{{$email->asunto}}</span>
-                                        <div class="d-flex align-items-center">
-                                            <div class="mr-2 ml-2">
-                                                <i class="fa fa-star text-muted"></i>
-                                            </div>
-                                            <label class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input">
-                                                <span class="custom-control-label"></span>
-                                            </label>
-                                        </div>
                                     </div>
                                     @isset ($email->mensajes[0])
                                         <span class="message">{!! Str::limit($email->mensajes[0]->mensaje, 50) !!}</span>

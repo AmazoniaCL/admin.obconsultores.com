@@ -27,7 +27,7 @@ class EmailController extends Controller
             $q->orderBy('created_at', 'desc');
         }])->with('user')->where('cliente_id', $request->id)->where('estado', $estado)->orderBy('created_at', 'desc')->get();
 
-        // dd($datos);
+        //dd($datos);
 
         return view('emails.index',['emails' => $datos, 'cliente' => $cliente]);
     }
@@ -236,11 +236,20 @@ class EmailController extends Controller
     public function reactivar_email(Request $request)
     {
         $email = Email::find($request->id);
+        $email->update([
+            'estado' => 'Sin Leer',
+        ]);
+        return redirect()->route('consultas-cliente', $email->cliente_id);
+    }
+
+    public function desactivar_email(Request $request)
+    {
+        $email = Email::find($request->id);
         if($email->estado != 'Borrado'){
             $email->update([
-                'estado' => 'Sin Leer',
+                'estado' => 'Borrado',
             ]);
         }
-        return $email;
+        return redirect()->route('consultas-cliente', $email->cliente_id);
     }
 }

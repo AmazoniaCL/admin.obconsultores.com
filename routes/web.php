@@ -105,6 +105,8 @@ Route::post('/clientes/cosultas/store', 'EmailController@store');
 Route::post('/clientes/cosultas/store_mensaje', 'EmailController@store_mensaje');
 Route::post('/clientes/cosultas/get/media', 'EmailController@get_media');
 Route::post('/clientes/cosultas/estado', 'EmailController@cambio_estado');
+Route::get('/clientes/cosultas/activar/{id}', 'EmailController@reactivar_email');
+Route::get('/clientes/cosultas/desactivar/{id}', 'EmailController@desactivar_email');
 Route::get('/clientes/search/{search}', 'ClientesController@search');
 Route::get('/clientes/ver/{id}/search', 'ClientesController@search_proceso');
 

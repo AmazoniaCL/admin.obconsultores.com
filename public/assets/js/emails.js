@@ -42,6 +42,7 @@ function contenido_media(id, el = null) {
             let html = '';
             let mensajes = '';
             let archivos ='';
+            let btnEliminar = '';
             let count_archivos = 0;
 
             data.mensajes.forEach((row, index) => {
@@ -58,6 +59,11 @@ function contenido_media(id, el = null) {
                    `;
                    count_archivos +=1;
                 });
+
+                if(data.estado != 'Borrado')
+                {
+                    btnEliminar = `<a href="/clientes/cosultas/desactivar/${ data.id }" class="btn btn-outline-primary" data-toggle="tooltip" data-placement="bottom" title="Eliminar"><i class="fe fe-trash-2"></i></a>`;
+                }
 
                 mensajes +=`<div class="mail-cnt p-0 m-0">
                                 <div class="detail-header">
@@ -78,8 +84,17 @@ function contenido_media(id, el = null) {
             });
 
             html += `
+                <div class="d-flex justify-content-between action_bar">
+                    <div>
+
+                    </div>
+                    <div>
+                        <a href="/clientes/cosultas/activar/${ data.id }" class="btn btn-outline-primary" data-toggle="tooltip" data-placement="bottom" title="Marcar como no leído"><i class="fe fe-mail"></i></a>
+                        `+btnEliminar+`
+                    </div>
+                </div>
                 <div class="card-body detail">
-                    <div class="detail-header">
+                    <div class="detail-header pb-1">
                         <h4>${ data.asunto }</h4>
                     </div>
                     `+mensajes+`
