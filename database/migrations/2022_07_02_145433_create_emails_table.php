@@ -15,14 +15,24 @@ class CreateEmailsTable extends Migration
     {
         Schema::create('emails', function (Blueprint $table) {
             $table->id();
-            $table->string('asunto',255);
+            $table->string('asunto', 255);
             $table->enum('estado', ['Sin Leer', 'Leido', 'Borrado']);
+            $table->enum('tipo', ['General', 'Proceso']);
+
+            // Relationships
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->onDelete('cascade');
+
             $table->foreignId('cliente_id')
-            ->constrained('clientes')
-            ->onDelete('cascade');
+                ->constrained('clientes')
+                ->onDelete('cascade');
+
+            $table->foreignId('procesos_id')
+                ->nullable()
+                ->constrained('procesos')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }

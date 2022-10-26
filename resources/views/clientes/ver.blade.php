@@ -484,131 +484,58 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#Procesos" aria-expanded="true">Procesos</a></li>
-                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Clientes" aria-expanded="true">Consultas</a></li>
-                        </ul>
-
-
-                        <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane active" id="Procesos" aria-expanded="false">
-
-                                {{-- <div class="card"> --}}
-                                    <div class="card-header px-0">
-                                        <h3 class="card-title">Procesos </h3>
-                                        <div class="card-options">
-                                            <a href="/procesos/crear?cliente={{ $cliente->identificacion }}" class="btn text-white bg-primary"><i class="fe fe-plus mr-2"></i> Agregar Proceso</a>
-                                        </div>
-                                    </div>
-                                    <div class="card-body px-0 table-responsive table_e2">
-                                        <form action="/clientes/ver/{{ $cliente->id }}/search" id="form_search_proceso" method="get">
-                                            <input type="text" name="search" id="search_proceso" class="form-control mt-0 mb-2" placeholder="Buscar proceso...">
-                                        </form>
-                                        <table class="table table-hover table-vcenter table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Demandado/Demandante</th>
-                                                    <th>Tipo</th>
-                                                    <th>Radicado</th>
-                                                    <th>Juzgado</th>
-                                                    <th>Juez</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                @foreach ($procesos as $proceso)
-                                                    <tr>
-                                                        <td class="width50">
-                                                            <b>Demandado:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandado')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandados' }}
-                                                            <br>
-                                                            <b>Demandante:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandante')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandantes' }}
-                                                        </td>
-                                                        <td>{{ $proceso->tipo }}</td>
-                                                        <td>{{ $proceso->radicado ?? 'N/A' }}</td>
-                                                        <td>{{ $proceso->juzgado ?? 'N/A' }}</td>
-                                                        <td>{{ $proceso->juez ?? 'N/A' }}</td>
-                                                        <td>
-                                                            <a href="/procesos/ver/{{ $proceso->id }}"><button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button></a>
-
-                                                            @role('admin')
-                                                                <a href="javascript:confirmarDelete('/procesos/eliminar/{{ $proceso->id }}')"><button type="button" class="btn btn-danger btn-sm" title="Eliminar"><i class="fa fa-trash"></i></button></a>
-                                                            @else
-                                                                @if ($proceso->users_id == auth()->user()->id)
-                                                                    <a href="javascript:confirmarDelete('/procesos/eliminar/{{ $proceso->id }}')"><button type="button" class="btn btn-danger btn-sm" title="Eliminar"><i class="fa fa-trash"></i></button></a>
-                                                                @endif
-                                                            @endrole
-                                                        </td>
-
-                                                    </tr>
-                                                @endforeach
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                {{-- </div> --}}
-
-                            </div>
-
-                            <div role="tabpanel" class="tab-pane" id="Clientes" aria-expanded="false">
-
-                                {{-- <div class="card"> --}}
-                                    <div class="card-header px-0">
-                                        <h3 class="card-title">Consultas </h3>
-                                        <div class="card-options">
-                                            @role('cliente')
-                                                <a href="/procesos/crear-consulta?cliente={{ $cliente->identificacion }}" class="btn text-white bg-primary"><i class="fe fe-plus mr-2"></i> Solicitar consulta</a>
-                                            @endrole
-                                        </div>
-                                    </div>
-                                    <div class="card-body px-0 table-responsive table_e2">
-                                        <form action="/clientes/ver/{{ $cliente->id }}/search" id="form_search_proceso" method="get">
-                                            <input type="text" name="search" id="search_proceso" class="form-control mt-0 mb-2" placeholder="Buscar proceso...">
-                                        </form>
-                                        <table class="table table-hover table-vcenter table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Demandado/Demandante</th>
-                                                    <th>Tipo</th>
-                                                    <th>Radicado</th>
-                                                    <th>Juzgado</th>
-                                                    <th>Juez</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                @foreach ($procesos as $proceso)
-                                                    <tr>
-                                                        <td class="width50">
-                                                            <b>Demandado:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandado')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandados' }}
-                                                            <br>
-                                                            <b>Demandante:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandante')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandantes' }}
-                                                        </td>
-                                                        <td>{{ $proceso->tipo }}</td>
-                                                        <td>{{ $proceso->radicado ?? 'N/A' }}</td>
-                                                        <td>{{ $proceso->juzgado ?? 'N/A' }}</td>
-                                                        <td>{{ $proceso->juez ?? 'N/A' }}</td>
-                                                        <td>
-                                                            <a href="/procesos/ver/{{ $proceso->id }}"><button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button></a>
-
-                                                            @role('admin')
-                                                                <a href="javascript:confirmarDelete('/procesos/eliminar/{{ $proceso->id }}')"><button type="button" class="btn btn-danger btn-sm" title="Eliminar"><i class="fa fa-trash"></i></button></a>
-                                                            @endrole
-                                                        </td>
-
-                                                    </tr>
-                                                @endforeach
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                {{-- </div> --}}
-
+                        <div class="card-header px-0">
+                            <h3 class="card-title">Procesos </h3>
+                            <div class="card-options">
+                                <a href="/procesos/crear?cliente={{ $cliente->identificacion }}" class="btn text-white bg-primary"><i class="fe fe-plus mr-2"></i> Agregar Proceso</a>
                             </div>
                         </div>
+                        <div class="card-body px-0 table-responsive table_e2">
+                            <form action="/clientes/ver/{{ $cliente->id }}/search" id="form_search_proceso" method="get">
+                                <input type="text" name="search" id="search_proceso" class="form-control mt-0 mb-2" placeholder="Buscar proceso...">
+                            </form>
+                            <table class="table table-hover table-vcenter table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Demandado/Demandante</th>
+                                        <th>Tipo</th>
+                                        <th>Radicado</th>
+                                        <th>Juzgado</th>
+                                        <th>Juez</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
+                                    @foreach ($procesos as $proceso)
+                                        <tr>
+                                            <td class="width50">
+                                                <b>Demandado:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandado')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandados' }}
+                                                <br>
+                                                <b>Demandante:</b> {{ \App\Models\Detalle_proceso::where('tipo', 'Demandante')->where('procesos_id', $proceso->id)->with('demandados')->first()->demandados->nombre ?? 'Sin demandantes' }}
+                                            </td>
+                                            <td>{{ $proceso->tipo }}</td>
+                                            <td>{{ $proceso->radicado ?? 'N/A' }}</td>
+                                            <td>{{ $proceso->juzgado ?? 'N/A' }}</td>
+                                            <td>{{ $proceso->juez ?? 'N/A' }}</td>
+                                            <td>
+                                                <a href="/procesos/ver/{{ $proceso->id }}"><button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button></a>
 
+                                                @role('admin')
+                                                    <a href="javascript:confirmarDelete('/procesos/eliminar/{{ $proceso->id }}')"><button type="button" class="btn btn-danger btn-sm" title="Eliminar"><i class="fa fa-trash"></i></button></a>
+                                                @else
+                                                    @if ($proceso->users_id == auth()->user()->id)
+                                                        <a href="javascript:confirmarDelete('/procesos/eliminar/{{ $proceso->id }}')"><button type="button" class="btn btn-danger btn-sm" title="Eliminar"><i class="fa fa-trash"></i></button></a>
+                                                    @endif
+                                                @endrole
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

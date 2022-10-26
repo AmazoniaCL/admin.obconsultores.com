@@ -1,0 +1,12 @@
+services:
+  app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      image: 'obconsultores:latest'
+      container_name: portafolio
+      restart: always
+      volumes:
+        - '.:/var/www/html/'
+      ports:
+        - "82:80"

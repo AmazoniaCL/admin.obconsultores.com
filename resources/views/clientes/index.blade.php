@@ -9,7 +9,7 @@
 <div class="section-body">
 
     <div class="col-lg-12">
-        
+
 
         <a href="/"><button type="button" class="btn btn-primary mb-2"><i class="fa fa-arrow-circle-left mr-2"></i> Atras </button></a>
         <form action="/clientes/search" method="get">
@@ -61,6 +61,7 @@
                                 </td>
                                 <td class="text-center">
                                     <a href="/clientes/ver/{{ $cliente->id }}"><button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button></a>
+                                    <a href="/clientes/cosultas/inbox/{{ $cliente->id }}"><button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-envelope"></i></button></a>
                                     <button type="button" onclick="eliminar_cliente({{ $cliente->id }})" class="btn text-white bg-red btn-sm" title="Delete"><i class="fa fa-trash-o"></i></button>
                                 </td>
                             </tr>

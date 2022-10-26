@@ -17,7 +17,20 @@ $(document).ready(function() {
         let content = $('.note-editable').html();
         $('#mensaje').val(content);
     });
-})
+
+    if($('#correos_notificar').length) {
+        $('#correos_notificar').multiselect({
+            includeSelectAllOption: true,
+            allSelectedText: 'Todos seleccionados',
+            selectAllText: 'Seleccionar todos',
+            nonSelectedText: 'Seleccione el/los correos',
+            nSelectedText: ' correos seleccionados',
+            enableFiltering: true,
+            buttonWidth: '100%'
+        });
+    }
+});
+
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -96,6 +109,15 @@ function contenido_media(id, el = null) {
                 <div class="card-body detail">
                     <div class="detail-header pb-1">
                         <h4>${ data.asunto }</h4>
+
+                        ${ (data.procesos) ? `
+                            <div class="media">
+                                <div class="media-body">
+                                    <p class="mb-0"><strong class="text-muted mr-1">Proceso: </strong><a href="/procesos/ver/${data.procesos.id}">${ data.procesos.tipo } ${ data.procesos.num_proceso } (${ data.procesos.ciudad }, ${ data.procesos.departamento }) - ${ data.procesos.radicado ?? 'Sin radicado' }</a></p>
+                                </div>
+                            </div>
+                        ` : '' }
+
                     </div>
                     `+mensajes+`
                 </div>
@@ -107,6 +129,16 @@ function contenido_media(id, el = null) {
             }, 500);
             document.getElementById("mensaje_id").value = data.id;
             document.getElementById('formulario_respuesta').style.display = '';
+
+            $('#correos_notificar').multiselect({
+                includeSelectAllOption: true,
+                allSelectedText: 'Todos seleccionados',
+                selectAllText: 'Seleccionar todos',
+                nonSelectedText: 'Seleccione el/los correos',
+                nSelectedText: ' correos seleccionados',
+                enableFiltering: true,
+                buttonWidth: '100%'
+            });
         }
     })
 }
@@ -120,4 +152,15 @@ function cambio_de_estado(id) {
             //console.log(data);
         }
     })
+}
+
+function changeTipo(element) {
+    if($(element).val() == 'Proceso') {
+        $('#content_procesos_id').show();
+        $('#procesos_id').attr('required', true);
+    } else {
+        $('#content_procesos_id').hide();
+        $('#procesos_id').attr('required', false);
+        $('#procesos_id').value('');
+    }
 }

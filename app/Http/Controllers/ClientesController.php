@@ -13,9 +13,15 @@ use App\Models\Cliente;
 use App\Models\Personal;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class ClientesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index() {
         $clientes = Cliente::with('procesos')->orderBy('nombre', 'ASC')->paginate(10);
 
@@ -170,6 +176,37 @@ class ClientesController extends Controller
         ]);
 
         if ($cliente->save()) {
+            $usuario = User::create([
+                'identificacion' => $request['identificacion'],
+                'name' => $request['nombre'],
+                'email' => $request['correo'],
+                'password' => Hash::make($request['identificacion']),
+                'estado' => 'Activo'
+            ]);
+
+            if ($usuario->save()) {
+                $usuario->assignRole('cliente');
+
+                // Enviar correo de notificacion
+                $correosEnviar = [$request['correo'],'leicortega@gmail.com','gerencia@obconsultores.com'];
+                $mensajeEnviar = '
+                    <p>Hola ' .$request['nombre']. ',</p>
+                    <p>Estas son tus credenciales para ver tus procesos en ObConsultores.</p>
+                    <h3>Usuario: '.$request['identificacion'].'</h3>
+                    <h3>Contraseña: '.$request['identificacion'].'</h3>
+                    <a href="https://admin.obconsultores.com" target="_blank">Clic aqui para ingresar a ObConsultores</a>
+                ';
+
+                $asunto = 'Usuario creado en ObConsultores';
+
+                try {
+                    Mail::to($correosEnviar)->send(new MensajeCliente($mensajeEnviar, $asunto, null, null, null));
+                } catch (\Throwable $th) {
+                    //throw $th;
+                    dd($th);
+                }
+            }
+
             return redirect()->route('ver-cliente', ['id' => $cliente->id]);
         }
     }

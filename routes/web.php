@@ -61,40 +61,8 @@ Route::group(['middleware' => ['permission:general|penal|civil|familia|laboral|s
     Route::post('/procesos/actuaciones/archivos/delete', 'ProcesosController@delete_archivos_actuacion');
 });
 
-// Rutas para Procesos Civil
-Route::group(['middleware' => ['permission:civil|universal']], function () {
-    Route::get('/procesos/civil', 'ProcesosController@civil')->name('civil');
-});
-
-// Rutas para Procesos Familia
-Route::group(['middleware' => ['permission:familia|universal']], function () {
-    Route::get('/procesos/familia', 'ProcesosController@familia')->name('familia');
-});
-
-// Rutas para Procesos Laboral
-Route::group(['middleware' => ['permission:laboral|universal']], function () {
-    Route::get('/procesos/laboral', 'ProcesosController@laboral')->name('laboral');
-});
-
-// Rutas para Procesos Seguridad Social
-Route::group(['middleware' => ['permission:seguridad social|universal']], function () {
-    Route::get('/procesos/seguridad-social', 'ProcesosController@seguridad_social')->name('seguridad-social');
-});
-
-// Rutas para Procesos Administrativo
-Route::group(['middleware' => ['permission:administrativo|universal']], function () {
-    Route::get('/procesos/administrativo', 'ProcesosController@administrativo')->name('administrativo');
-});
-
-// Rutas para Procesos Penal
-Route::group(['middleware' => ['permission:penal|universal']], function () {
-    Route::get('/procesos/penal', 'ProcesosController@penal')->name('penal');
-});
-
-// Rutas para Procesos Otros
-Route::group(['middleware' => ['permission:penal|universal']], function () {
-    Route::get('/procesos/otros', 'ProcesosController@otros')->name('otros');
-});
+Route::get('/procesos/cosultas/inbox/{procesos_id}/{estado?}', 'EmailController@indexProceso')->name('consultas-proceso');
+Route::get('/procesos/cosultas/create/{procesos_id}', 'EmailController@createFromProceso')->name('create-consultas-proceso');
 
 // Rutas para Clientes
 Route::get('/clientes', 'ClientesController@index')->name('clientes')->middleware('cliente');
@@ -131,14 +99,12 @@ Route::group(['middleware' => ['permission:general|demandados|universal']], func
 });
 
 // Rutas para Consultas
-Route::group(['middleware' => ['permission:general|clientes|universal']], function () {
-    Route::get('/consultas', 'ConsultasController@index')->name('consultas');
-    Route::get('/consultas/contestadas', 'ConsultasController@contestadas');
-    Route::get('/consultas/conversaciones', 'ConsultasController@contestadas');
-    Route::get('/consultas/ver/{id}', 'ConsultasController@ver')->name('ver-consulta');
-    Route::post('/consultas/responder', 'ConsultasController@responder');
-    Route::get('/consultas/correo/prueba', 'ConsultasController@prueba');
-});
+Route::get('/consultas', 'ConsultasController@index')->name('consultas');
+Route::get('/consultas/contestadas', 'ConsultasController@contestadas');
+Route::get('/consultas/conversaciones', 'ConsultasController@contestadas');
+Route::get('/consultas/ver/{id}', 'ConsultasController@ver')->name('ver-consulta');
+Route::post('/consultas/responder', 'ConsultasController@responder');
+Route::get('/consultas/correo/prueba', 'ConsultasController@prueba');
 
 // Rutas para Administradores
 Route::group(['middleware' => ['role:admin']], function () {

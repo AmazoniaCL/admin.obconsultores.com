@@ -1,15 +1,17 @@
 @extends('layouts.emails')
 
-@section('title_content') Email @endsection
+@section('title_content') Consultas @endsection
 
 @section('myStyles')
     <link rel="stylesheet" href="{{ asset('assets/plugins/summernote/dist/summernote.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.css') }}"/>
 @endsection
 
 @section('myScripts')
     <script src="{{ asset('assets/plugins/fullcalendar/moment.min.js') }}"></script>
     <script src="{{ asset('assets/bundles/summernote.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/summernote/dist/lang/summernote-es-ES.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('assets/js/emails.js') }}"></script>
 @endsection
 
@@ -21,7 +23,7 @@
                     <h4 class="text-center">{{$cliente->nombre}}</h4>
                 </div>
                 <div class="input-icon mt-1 mb-2">
-                    <input type="text" class="form-control search" placeholder="Search for...">
+                    <input type="text" class="form-control search" placeholder="Buscar...">
                     <span class="input-icon-addon">
                         <i class="fe fe-search"></i>
                     </span>
@@ -46,6 +48,13 @@
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="name text_ellipsis">{{$email->asunto}}</span>
                                     </div>
+
+                                    @if ($email->procesos)
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="message">{{ $email->procesos->tipo }} {{ $email->procesos->num_proceso }} ({{ $email->procesos->ciudad }}, {{ $email->procesos->departamento }}) - {{ $email->procesos->radicado ?? 'Sin radicado' }}</span>
+                                        </div>
+                                    @endif
+
                                     @isset ($email->mensajes[0])
                                         <span class="message">{!! Str::limit($email->mensajes[0]->mensaje, 50) !!}</span>
                                     @else
@@ -87,12 +96,23 @@
                             <div class="card-header">
                                 <h3 class="card-title">Responder</h3>
                             </div>
+
                             <div class="card-body">
                                 @if (session()->has('mostrar_alerta') && session('mostrar_alerta') == 1)
                                     <div class="alert alert-{{ session('tipo') }}" role="alert">
                                         <strong>{{ session('mensaje') }}</strong>
                                     </div>
                                 @endif
+
+                                <div class="form-group">
+                                    <label for="correos_notificar" class="form-label">Notificar a: </label>
+                                    <select id="correos_notificar" name="correos_notificar[]" multiple="multiple" class="w-100" style="width: 100% !important" required>
+                                        <option value="{{ $cliente->correo }}">{{ $cliente->correo }}</option>
+                                        @foreach ($emailsList as $row)
+                                            <option value="{{ $row->email }}">{{ $row->email }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
                                 <label class="form-label">Mensaje</label>
 

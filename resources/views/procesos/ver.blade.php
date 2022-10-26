@@ -31,10 +31,11 @@
             <a href="https://procesos.ramajudicial.gov.co/procesoscs/ConsultaJusticias21.aspx?EntryId=grBcWxPg0ZUShlbwdwhIP3U6ZKQ%3d" target="_blank" class="float-right"><button type="button" class="btn btn-primary mb-2 ml-2"><i class="fa fa-bank ml-2"></i> Rama Judicial </button></a>
         @endhasanyrole
 
-
         @if ($proceso[0]->users_id == auth()->user()->id || auth()->user()->hasRole('admin'))
-            <a href="/procesos/ver/acceso/{{ $proceso[0]->id }}" class="btn btn-primary mb-2 float-right"><i class="fa fa-lock mr-2"></i> Acceso </a>
+            <a href="/procesos/ver/acceso/{{ $proceso[0]->id }}" class="btn btn-primary mb-2 ml-2 float-right"><i class="fa fa-lock mr-2"></i> Acceso </a>
         @endif
+
+        <a href="/procesos/cosultas/inbox/{{ $proceso[0]->id }}" class="btn btn-primary mb-2 float-right"><i class="fa fa-envelope mr-2"></i> Consultas </a>
 
         @if (session()->has('update') && session()->has('update') == 1)
             <div class="alert alert-icon alert-success col-12" role="alert">

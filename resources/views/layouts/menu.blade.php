@@ -61,9 +61,9 @@
                         {{-- <li class="{{ Request::is('demandados/*') || Request::is('demandados') ? 'active' : '' }}"><a href="/demandados"><i class="icon-user-unfollow"></i><span data-hover="Demandados">Demandados</span></a></li> --}}
                     @endcanany
 
-                    @canany(['consultas', 'universal'])
+                    {{-- @canany(['consultas', 'universal'])
                         <li class="{{ Request::is('consultas/*') || Request::is('consultas') ? 'active' : '' }}"><a href="/consultas"><i class="icon-envelope-open"></i><span data-hover="Consultas">Consultas</span></a></li>
-                    @endcanany
+                    @endcanany --}}
 
                     @unlessrole('cliente')
                         <li class="{{ Request::is('calendario/*') || Request::is('calendario') ? 'active' : '' }}"><a href="/calendario"><i class="icon-calendar"></i><span data-hover="Calendario">Calendario</span></a></li>

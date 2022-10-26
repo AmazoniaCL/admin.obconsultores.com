@@ -128,13 +128,14 @@ class SincronizarActuaciones implements ShouldQueue
                         $mensaje = "Reultado de sincronización ".date('Y-m-d H:i:s')."<br><br><br><br>";
                         $mensaje .= "Proceso ".$proceso['tipo']." ".$proceso['radicado']." de ".$proceso['clientes']['nombre']." tiene ".$nuevos[$proceso['id']]." actuaciones nuevas.";
                         $mensaje .= "<br><br>";
+                        $mensaje .= "<a href='https://admin.obconsultores.com/procesos/ver/".$proceso['id']."' target='_blank'>Clic aqui para ver el proceso</a>";
 
                         $correosEnviar = array_unique($correos);
 
                         // dd($correosEnviar);
 
                         try {
-                            Mail::to(implode(",", $correosEnviar))->send(new MensajeCliente($mensaje, 'Sincronización de actuaciones', null, null, null));
+                            Mail::to($correosEnviar)->send(new MensajeCliente($mensaje, 'Sincronización de actuaciones', null, null, null));
                         } catch (\Throwable $th) {
                             //throw $th;
                         }
@@ -152,9 +153,10 @@ class SincronizarActuaciones implements ShouldQueue
             'users_id' => auth()->user()->id,
         ]);
 
-        $mensaje = "Reultado de sincronización ".date('Y-m-d H:i:s')."<br><br><br><br>";
+        $mensaje = "Reultado de sincronización ".date('Y-m-d H:i:s')."<br><br><br>";
         foreach ($nuevos as $key => $value) {
-            $mensaje .= "Proceso ".$procesosnuevos[$key]['tipo']." ".$procesosnuevos[$key]['radicado']." de ".$procesosnuevos[$key]['clientes']['nombre']." tiene ".$value." actuaciones nuevas.";
+            $mensaje .= "<p>Proceso ".$procesosnuevos[$key]['tipo']." ".$procesosnuevos[$key]['radicado']." de ".$procesosnuevos[$key]['clientes']['nombre']." tiene ".$value." actuaciones nuevas.</p>";
+            $mensaje .= "<a href='https://admin.obconsultores.com/procesos/ver/".$procesosnuevos[$key]['id']."' target='_blank'>Clic aqui para ver el proceso</a>";
             $mensaje .= "<br><br>";
 
             SincronizacionProceso::create([

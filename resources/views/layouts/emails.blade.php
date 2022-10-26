@@ -136,16 +136,17 @@
     <!-- start Main menu -->
     <div id="left-sidebar" class="sidebar">
         <div class="d-flex justify-content-between brand_name">
-            <h5 class="brand-name">{{ \Auth::user()->name }}</h5>
-        </div>
-        <div class="input-icon">
-            <span class="input-icon-addon">
-                <i class="fe fe-search"></i>
-            </span>
-            <input type="text" class="form-control" placeholder="Search...">
+            <h5 class="brand-name">CONSULTAS</h5>
         </div>
 
-        <a href="/clientes/cosultas/create/{{$cliente->id}}" class="btn btn-primary btn-block mt-4 mb-2"><i class="fe fe-edit-3"></i> Redactar</a>
+        @if ($isViewProcesos)
+            <a href="/procesos/cosultas/create/{{$proceso->id}}" class="btn btn-primary btn-block mt-4"><i class="fe fe-edit-3"></i> Nueva consulta</a>
+            <a href="/procesos/ver/{{$proceso->id}}" class="btn btn-primary btn-block mb-2"><i class="fe fe-back"></i> Volver</a>
+        @else
+            <a href="/clientes/cosultas/create/{{$cliente->id}}" class="btn btn-primary btn-block mt-4"><i class="fe fe-edit-3"></i> Nueva consulta</a>
+            <a href="/clientes/ver/{{$cliente->id}}" class="btn btn-primary btn-block mb-2"><i class="fe fe-back"></i> Volver</a>
+        @endif
+
         <nav class="sidebar-nav">
             <ul class="metismenu mt-2">
                 <li

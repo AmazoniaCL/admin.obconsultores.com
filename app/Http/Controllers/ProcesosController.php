@@ -27,6 +27,11 @@ use PDF;
 
 class ProcesosController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function crear() {
         return view('procesos.crear');
     }
