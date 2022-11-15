@@ -731,7 +731,12 @@ class ProcesosController extends Controller
     }
 
     public function search_demandado(Request $request) {
-        return Demandado::where('identificacion', $request['identificacion'])->get();
+        $cliente = Demandado::where('identificacion', $request['identificacion'])->get();
+        if($cliente->isEmpty())
+        {
+            $cliente = Cliente::where('identificacion', $request['identificacion'])->get();
+        }
+        return $cliente;
     }
 
     public function search_abogado(Request $request) {
