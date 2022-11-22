@@ -135,6 +135,9 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::post('/administrador/pagina-web', 'AdminController@pagina_web_update');
     Route::get('/administrador/sincronizacion', 'AdminController@sincronizacion')->name('sincronizacion');
     Route::get('/administrador/sincronizacion/{id}', 'AdminController@sincronizacion_ver');
+    Route::get('/administrador/formatos', 'AdminController@formatos')->name('formatos');
+    Route::post('/administrador/agg_formatos', 'AdminController@agg_formatos')->name('agg_formatos');
+    Route::post('/administrador/delete_formatos', 'AdminController@delete_formatos');
 });
 
 Route::post('/sincronizar-procesos', 'ProcesosController@sincronizar_procesos');

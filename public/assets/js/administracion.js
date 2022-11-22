@@ -220,7 +220,7 @@ function agg_contrato_ini(){
     $('#fecha_fin_div').addClass('d-none');
     $('#fecha_inicio_div').addClass('d-none');
     $('#clausulas_div').addClass('d-none');
-    
+
 }
 
 function eliminar_contrato(id, personal_id) {
@@ -267,7 +267,7 @@ function cargar_documentos(tipo, id_table, personal_id, fechas) {
                         <td>${ documento.fecha_fin_vigencia ?? 'N/A' }</td>
                         <td>NA</td>`
                     }
-                   
+
                     content += `
                     <td>${ documento.observaciones }</td>
                     <td>Activo</td>
@@ -431,4 +431,29 @@ function tipo_contrato_select(tipo) {
         default:
             break;
     }
+}
+
+//formato
+function delete_formato(id, nombre){
+    if(confirm('¿Quieres Eliminar el formato ' + nombre+ ' ?')){
+        $.ajax({
+            url: '/administrador/delete_formatos',
+            type: 'post',
+            data: {id:id},
+            success: function (data) {
+                $('#delete_confirmed').removeClass('d-none')
+                setTimeout(function(){ window.location.href = '/administrador/formatos'; }, 600);
+            }
+        });
+    }
+
+}
+
+function edit_formato(id, nombre, descripcion){
+    $('#nombre').val(nombre);
+    $('#id_documento').val(id);
+    $('#descripcion').val(descripcion);
+    $('#file').removeAttr('required');
+    $('#btn_agg_formato').html('Editar Documento');
+    $('#agg_formato').collapse('show');
 }

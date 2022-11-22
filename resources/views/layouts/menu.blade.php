@@ -80,6 +80,7 @@
                             <li class="{{ Request::is('administrador/personal') ? 'active' : '' }}{{ Request::is('administrador/personal/*') ? 'active' : '' }}"><a href="{{route('personal')}}"><i class="icon-users"></i><span data-hover="Personal">Personal</span></a></li>
                             <li class="{{ Request::is('administrador/pagina-web') ? 'active' : '' }}{{ Request::is('administrador/pagina-web/*') ? 'active' : '' }}"><a href="{{route('pagina-web')}}"><i class="icon-config"></i><span data-hover="Pagina_Web">Pagina Web</span></a></li>
                             <li class="{{ Request::is('administrador/sincronizacion') ? 'active' : '' }}{{ Request::is('administrador/sincronizacion/*') ? 'active' : '' }}"><a href="{{route('sincronizacion')}}"><i class="icon-tools"></i><span data-hover="Sincronización">Sincronización</span></a></li>
+                            <li class="{{ Request::is('administrador/formatos') ? 'active' : '' }}{{ Request::is('administrador/formatos/*') ? 'active' : '' }}"><a href="{{route('formatos')}}"><i class="icon-doc"></i><span data-hover="Formatos">Formatos</span></a></li>
                         </ul>
                     </li>
                     @endrole

@@ -9,6 +9,7 @@ use App\Models\Otro_si;
 use App\Models\Personal;
 use App\Models\Config_pagina;
 use App\Models\Sincronizacion;
+use App\Models\Formato;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -28,14 +29,16 @@ class AdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function usuarios() {
+    public function usuarios()
+    {
         $usuarios = User::paginate(10);
 
         return view('administrador.usuarios', ['usuarios' => $usuarios]);
     }
 
-    public function usuarios_create(Request $request) {
-        if($request->id) {
+    public function usuarios_create(Request $request)
+    {
+        if ($request->id) {
             $dataSet = [
                 'identificacion' => $request['identificacion'],
                 'name' => $request['name'],
@@ -43,7 +46,7 @@ class AdminController extends Controller
                 'estado' => $request['estado']
             ];
 
-            if($request['password']) $dataSet['password'] =  Hash::make($request['password']);
+            if ($request['password']) $dataSet['password'] =  Hash::make($request['password']);
 
             $user = User::find($request->id);
             $user->update($dataSet);
@@ -68,7 +71,7 @@ class AdminController extends Controller
             'estado' => $request['estado']
         ]);
 
-        if ( $usuario->save() ) {
+        if ($usuario->save()) {
             $usuario->assignRole($request['rol']);
             $usuario->givePermissionTo($request['permisos']);
 
@@ -82,68 +85,72 @@ class AdminController extends Controller
         }
     }
 
-    public function departamentos() {
+    public function departamentos()
+    {
         return Departamento::all();
     }
 
-    public function municipios(Request $request) {
+    public function municipios(Request $request)
+    {
         return Departamento::where('nombre', $request['dpt'])->with('municipios')->first();
     }
 
-    public function documentacion(){
+    public function documentacion()
+    {
         $documentacion = Documentacion::paginate(15);
         return view('administrador.documentacion', ['documentacion' => $documentacion]);
     }
 
-    public function delete_documento(Request $request){
+    public function delete_documento(Request $request)
+    {
         $documento = Documentacion::find($request->id);
         Storage::disk('public')->delete($documento->file);
         $documento->delete();
     }
 
-    public function agg_documentacion(Request $request){
+    public function agg_documentacion(Request $request)
+    {
         $nombre_completo_file = '';
-        if($request->file('file') != null && $request->file('file') != ''){
+        if ($request->file('file') != null && $request->file('file') != '') {
             $date = Carbon::now('America/Bogota');
             $extension_file = pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_EXTENSION);
             $ruta_file = 'docs/documentos_legales/';
-            $nombre_file = 'documento_'.$date->isoFormat('YMMDDHmmss').'.'.$extension_file;
-            Storage::disk('public')->put($ruta_file.$nombre_file, File::get($request->file('file')));
+            $nombre_file = 'documento_' . $date->isoFormat('YMMDDHmmss') . '.' . $extension_file;
+            Storage::disk('public')->put($ruta_file . $nombre_file, File::get($request->file('file')));
 
-            $nombre_completo_file = $ruta_file.$nombre_file;
+            $nombre_completo_file = $ruta_file . $nombre_file;
         }
 
-        if($request->id != null && $request->id != ''){
+        if ($request->id != null && $request->id != '') {
             $documentacion = Documentacion::find($request->id);
             $documentacion->update([
                 'nombre' => $request->nombre,
             ]);
-            if($nombre_completo_file != '' || $nombre_completo_file != null){
+            if ($nombre_completo_file != '' || $nombre_completo_file != null) {
                 Storage::disk('public')->delete($documentacion->file);
                 $documentacion->update([
                     'file' => $nombre_completo_file,
                 ]);
-
             }
             return redirect()->back()->with(['edit' => 1]);
-        }else{
+        } else {
             Documentacion::create([
                 'nombre' => $request->nombre,
                 'file' => $nombre_completo_file,
             ]);
             return redirect()->back()->with(['create' => 1]);
         }
-
-
     }
 
-    public function personal(){
+    public function personal()
+    {
         $personal = Personal::paginate(10);
         return view('administrador.personal', ['personal' => $personal]);
     }
 
-    public function crearPersonal(Request $request) {
-        if($request->id != null && $request->id != '') {
+    public function crearPersonal(Request $request)
+    {
+        if ($request->id != null && $request->id != '') {
             unset($request->id);
             $personal = Personal::find($request->id);
             unset($request->id);
@@ -156,39 +163,44 @@ class AdminController extends Controller
         }
     }
 
-    public function ver_personal(Request $request){
+    public function ver_personal(Request $request)
+    {
         $personal = Personal::find($request->id);
         $usuario = User::with('roles')->where('identificacion', $personal->identificacion)->first();
 
         return view('administrador.ver_personal', ['persona' => $personal, 'usuario' => $usuario]);
     }
 
-    public function delete_personal(Request $request){
+    public function delete_personal(Request $request)
+    {
         Personal::find($request->id)->delete();
     }
 
-    public function caragar_contratos(Request $request){
+    public function caragar_contratos(Request $request)
+    {
         return Contratos_personal::where('personal_id', $request->id)->with('otro_si')->get();
     }
 
-    public function crear_contrato(Request $request) {
-        if($request->contrato_id != '' && $request->contrato_id != null){
+    public function crear_contrato(Request $request)
+    {
+        if ($request->contrato_id != '' && $request->contrato_id != null) {
             Contratos_personal::find($request->contrato_id)->update($request->all());
             return $request['personal_id'];
-        }else{
+        } else {
             Contratos_personal::create($request->all())->save();
             return $request['personal_id'];
         }
-
     }
 
-    public function agg_otro_si(Request $request) {
+    public function agg_otro_si(Request $request)
+    {
         Otro_si::create($request->all())->save();
 
         return Contratos_personal::find($request->contratos_personal_id)->personal_id;
     }
 
-    public function print_otrosi(Request $request) {
+    public function print_otrosi(Request $request)
+    {
         $otro_si = Otro_si::with(array('contratos_personal' => function ($query) {
             $query->with('personal');
         }))->find($request['id']);
@@ -196,32 +208,38 @@ class AdminController extends Controller
         return PDF::loadView('administrador.otro_si', compact('otro_si'))->setPaper('A4')->stream('otro_si.pdf');
     }
 
-    public function print_contrato(Request $request) {
+    public function print_contrato(Request $request)
+    {
         $contrato = Contratos_personal::with('personal')->find($request['id']);
 
         return PDF::loadView('administrador.contrato', compact('contrato'))->setPaper('A4')->stream('certificado.pdf');
     }
 
-    public function print_certificado(Request $request) {
+    public function print_certificado(Request $request)
+    {
         $contrato = Contratos_personal::with('personal')->find($request['id']);
         return PDF::loadView('personal.certificado', compact('contrato'))->setPaper('A4')->stream('certificado.pdf');
     }
 
-    public function eliminar_contrato(Request $request) {
+    public function eliminar_contrato(Request $request)
+    {
         Contratos_personal::find($request['id'])->delete();
         Otro_si::where('contratos_personal_id', $request->id);
         return $request['personal_id'];
     }
 
-    public function editar_contrato(Request $request) {
+    public function editar_contrato(Request $request)
+    {
         return Contratos_personal::find($request['id']);
     }
 
-    public function cargar_documentos(Request $request) {
+    public function cargar_documentos(Request $request)
+    {
         return Documentos_personal::where('tipo', $request['tipo'])->where('personal_id', $request['personal_id'])->get();
     }
 
-    public function agg_documento(Request $request) {
+    public function agg_documento(Request $request)
+    {
         $date = Carbon::now('America/Bogota');
         if ($request['id'] != null && $request['id'] != '') {
 
@@ -239,10 +257,10 @@ class AdminController extends Controller
             if ($request->file('adjunto')) {
                 $extension_file_documento = pathinfo($request->file('adjunto')->getClientOriginalName(), PATHINFO_EXTENSION);
                 $ruta_file_documento = 'docs/personal/documentos/';
-                $nombre_file_documento = 'documento_'.$date->isoFormat('YMMDDHmmss').'.'.$extension_file_documento;
-                Storage::disk('public')->put($ruta_file_documento.$nombre_file_documento, File::get($request->file('adjunto')));
+                $nombre_file_documento = 'documento_' . $date->isoFormat('YMMDDHmmss') . '.' . $extension_file_documento;
+                Storage::disk('public')->put($ruta_file_documento . $nombre_file_documento, File::get($request->file('adjunto')));
 
-                $nombre_completo_file_documento = $ruta_file_documento.$nombre_file_documento;
+                $nombre_completo_file_documento = $ruta_file_documento . $nombre_file_documento;
 
                 Storage::disk('public')->delete($documento->adjunto);
 
@@ -253,7 +271,6 @@ class AdminController extends Controller
 
 
             return ['tipo' => $request['tipo'], 'id_table' => $request['id_table'], 'personal_id' => $request['personal_id'], 'isfecha' => $request['isfecha']];
-
         } else {
             $documento = Documentos_personal::create([
                 'tipo' => $request['tipo'],
@@ -268,33 +285,34 @@ class AdminController extends Controller
             if ($request->file('adjunto')) {
                 $extension_file_documento = pathinfo($request->file('adjunto')->getClientOriginalName(), PATHINFO_EXTENSION);
                 $ruta_file_documento = 'docs/personal/documentos/';
-                $nombre_file_documento = 'documento_'.$date->isoFormat('YMMDDHmmss').'.'.$extension_file_documento;
-                Storage::disk('public')->put($ruta_file_documento.$nombre_file_documento, File::get($request->file('adjunto')));
+                $nombre_file_documento = 'documento_' . $date->isoFormat('YMMDDHmmss') . '.' . $extension_file_documento;
+                Storage::disk('public')->put($ruta_file_documento . $nombre_file_documento, File::get($request->file('adjunto')));
 
-                $nombre_completo_file_documento = $ruta_file_documento.$nombre_file_documento;
+                $nombre_completo_file_documento = $ruta_file_documento . $nombre_file_documento;
 
                 $documento['adjunto'] = $nombre_completo_file_documento;
             }
 
-            if ( $documento->save() ) {
+            if ($documento->save()) {
                 return ['tipo' => $request['tipo'], 'id_table' => $request['id_table'], 'personal_id' => $request['personal_id'], 'isfecha' => $request['isfecha']];
             }
 
             return 0;
         }
-
     }
 
-    public function editar_documento(Request $request) {
+    public function editar_documento(Request $request)
+    {
         return Documentos_personal::find($request['id']);
     }
 
 
-    public function exportar_documentos(Request $request){
+    public function exportar_documentos(Request $request)
+    {
         $zip = new ZipArchive();
 
 
-        if(!$zip->open(public_path('storage/docs/documentos_legales/documentacion.zip'), ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE){
+        if (!$zip->open(public_path('storage/docs/documentos_legales/documentacion.zip'), ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
             return 'error';
         }
 
@@ -304,7 +322,7 @@ class AdminController extends Controller
             $documento = $documentos->find($row)->file;
             $documento_nombre = $documentos->find($row)->nombre;
             $documento_extencion = pathinfo($documento, PATHINFO_EXTENSION);
-            $zip->addFile('storage/'.$documento, $documento_nombre.'.'.$documento_extencion);
+            $zip->addFile('storage/' . $documento, $documento_nombre . '.' . $documento_extencion);
         }
 
         $zip->close();
@@ -313,27 +331,31 @@ class AdminController extends Controller
     }
 
 
-    public function cargar_documentos_all(Request $request){
+    public function cargar_documentos_all(Request $request)
+    {
         return Documentacion::all();
     }
 
 
-    public function eliminar_documento(Request $request) {
+    public function eliminar_documento(Request $request)
+    {
         $documento = Documentos_personal::find($request['id']);
         Storage::disk('public')->delete($documento->adjunto);
         $documento->delete();
         return ['tipo' => $request['tipo'], 'personal_id' => $request['personal_id'], 'isfecha' => $request['isfecha']];
     }
 
-    public function pagina_web() {
+    public function pagina_web()
+    {
         $config = Config_pagina::first();
         return view('administrador.pagina_web', ['config' => $config]);
     }
 
-    public function pagina_web_update(Request $request) {
+    public function pagina_web_update(Request $request)
+    {
         $config = Config_pagina::first();
 
-        if(!$config) {
+        if (!$config) {
             Config_pagina::create([
                 'telefono' => $request['telefono'],
                 'direccion' => $request['direccion'],
@@ -363,27 +385,80 @@ class AdminController extends Controller
         return parent::callAction($method, array_values($parameters));
     }
 
-    public function sincronizacion(Request $request) {
-        $data = Sincronizacion::with(['procesos' => function($query) {
+    public function sincronizacion(Request $request)
+    {
+        $data = Sincronizacion::with(['procesos' => function ($query) {
             $query->with('procesos');
-         }])->with('users')->orderBy('id', 'desc')->paginate(20);
+        }])->with('users')->orderBy('id', 'desc')->paginate(20);
 
-        return view('administrador.sincronizacion', [ 'data' => $data ]);
+        return view('administrador.sincronizacion', ['data' => $data]);
     }
 
-    public function sincronizacion_ver(Request $request) {
-        $data = Sincronizacion::with(['procesos' => function($query) {
-            $query->with(['procesos' => function($_query) {
+    public function sincronizacion_ver(Request $request)
+    {
+        $data = Sincronizacion::with(['procesos' => function ($query) {
+            $query->with(['procesos' => function ($_query) {
                 $_query->with('clientes');
             }]);
         }])->with('users')->find($request['id']);
 
         // dd($data);
 
-        return view('administrador.sincronizacion_ver', [ 'data' => $data ]);
+        return view('administrador.sincronizacion_ver', ['data' => $data]);
     }
 
-    public function getMenu(Request $request) {
+    public function getMenu(Request $request)
+    {
         return Role::all();
+    }
+
+    //Fortmatos
+    public function formatos()
+    {
+        $formatos = Formato::paginate(15);
+        return view('administrador.formatos', ['documentacion' => $formatos]);
+    }
+
+    public function delete_formatos(Request $request)
+    {
+        $documento = Formato::find($request->id);
+        Storage::disk('public')->delete($documento->adjunto);
+        $documento->delete();
+    }
+
+    public function agg_formatos(Request $request)
+    {
+        $nombre_completo_file = '';
+        if ($request->file('file') != null && $request->file('file') != '') {
+            $date = Carbon::now('America/Bogota');
+            $extension_file = pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_EXTENSION);
+            $ruta_file = 'docs/formatos/';
+            $nombre_file = 'formato_' . $date->isoFormat('YMMDDHmmss') . '.' . $extension_file;
+            Storage::disk('public')->put($ruta_file . $nombre_file, File::get($request->file('file')));
+
+            $nombre_completo_file = $ruta_file . $nombre_file;
+        }
+
+        if ($request->id != null && $request->id != '') {
+            $documentacion = Formato::find($request->id);
+            $documentacion->update([
+                'nombre' => $request->nombre,
+                'descripcion' => $request->descripcion,
+            ]);
+            if ($nombre_completo_file != '' || $nombre_completo_file != null) {
+                Storage::disk('public')->delete($documentacion->adjunto);
+                $documentacion->update([
+                    'adjunto' => $nombre_completo_file,
+                ]);
+            }
+            return redirect()->back()->with(['edit' => 1]);
+        } else {
+            Formato::create([
+                'nombre' => $request->nombre,
+                'adjunto' => $nombre_completo_file,
+                'descripcion' => $request->descripcion,
+            ]);
+            return redirect()->back()->with(['create' => 1]);
+        }
     }
 }
