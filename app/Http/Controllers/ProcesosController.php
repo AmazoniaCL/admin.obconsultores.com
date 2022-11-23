@@ -238,6 +238,16 @@ class ProcesosController extends Controller
                     ]);
                 } else {
                     $abogado = Abogado::where('identificacion', $request['identificacion_abogado_'.$i])->first();
+                    if(!$abogado)
+                    {
+                        $abogado = Abogado::create([
+                            'nombre' => $request['nombre_abogado_'.$i],
+                            'identificacion' => $request['identificacion_abogado_'.$i],
+                            'telefono' => $request['telefono_abogado_'.$i],
+                            'correo' => $request['correo_abogado_'.$i],
+                            'direccion' => $request['direccion_abogado_'.$i]
+                        ]);
+                    }
                 }
 
                 if ( $request['existe_demandado_'.$i] == 'No' ) {
@@ -252,6 +262,18 @@ class ProcesosController extends Controller
                     ]);
                 } else {
                     $demandado = Demandado::where('identificacion', $request['identificacion_demandado_'.$i])->first();
+                    if(!$demandado)
+                    {
+                        $demandado = Demandado::create([
+                            'tipo' => $request['tipo_demandado_'.$i],
+                            'nombre' => $request['nombre_demandado_'.$i],
+                            'identificacion' => $request['identificacion_demandado_'.$i],
+                            'verificacion' => $request['verificacion_demandado_'.$i],
+                            'telefono' => $request['telefono_demandado_'.$i],
+                            'correo' => $request['correo_demandado_'.$i],
+                            'direccion' => $request['direccion_demandado_'.$i]
+                        ]);
+                    }
                 }
 
                 $detalle_proceso = Detalle_proceso::create([
@@ -275,6 +297,16 @@ class ProcesosController extends Controller
                     ]);
                 } else {
                     $abogado = Abogado::where('identificacion', $request['identificacion_abogado_demandante_'.$i])->first();
+                    if(!$abogado)
+                    {
+                        $abogado = Abogado::create([
+                            'nombre' => $request['nombre_abogado_demandante_'.$i],
+                            'identificacion' => $request['identificacion_abogado_demandante_'.$i],
+                            'telefono' => $request['telefono_abogado_demandante_'.$i],
+                            'correo' => $request['correo_abogado_demandante_'.$i],
+                            'direccion' => $request['direccion_abogado_demandante_'.$i]
+                        ]);
+                    }
                 }
 
                 if ( $request['existe_demandante_'.$i] == 'No' ) {
@@ -289,6 +321,17 @@ class ProcesosController extends Controller
                     ]);
                 } else {
                     $demandante = Demandado::where('identificacion', $request['identificacion_demandante_'.$i])->first();
+                    if(!$demandante){
+                        $demandante = Demandado::create([
+                            'tipo' => $request['tipo_demandante_'.$i],
+                            'nombre' => $request['nombre_demandante_'.$i],
+                            'identificacion' => $request['identificacion_demandante_'.$i],
+                            'verificacion' => $request['verificacion_demandante_'.$i],
+                            'telefono' => $request['telefono_demandante_'.$i],
+                            'correo' => $request['correo_demandante_'.$i],
+                            'direccion' => $request['direccion_demandante_'.$i]
+                        ]);
+                    }
                 }
 
                 $detalle_proceso = Detalle_proceso::create([
@@ -731,16 +774,28 @@ class ProcesosController extends Controller
     }
 
     public function search_demandado(Request $request) {
-        $cliente = Demandado::where('identificacion', $request['identificacion'])->get();
-        if($cliente->isEmpty())
-        {
-            $cliente = Cliente::where('identificacion', $request['identificacion'])->get();
+        $tablas = ['abogados', 'clientes', 'demandados', 'users'];
+
+        foreach ($tablas as $tabla) {
+            $demandante = DB::table($tabla)->where('identificacion', $request['identificacion'])->get();
+            if(!$demandante->isEmpty())
+            {
+                return $demandante;
+            }
         }
-        return $cliente;
     }
 
     public function search_abogado(Request $request) {
-        return Abogado::where('identificacion', $request['identificacion'])->get();
+        $tablas = ['abogados', 'clientes', 'demandados', 'users'];
+
+        foreach ($tablas as $tabla) {
+            $abogado = DB::table($tabla)->where('identificacion', $request['identificacion'])->get();
+            if(!$abogado->isEmpty())
+            {
+                return $abogado;
+            }
+        }
+
     }
 
     public function agregar_demandado(Request $request) {
