@@ -22,8 +22,11 @@ use App\Models\Audiencia;
 use App\Models\Cliente;
 use App\Models\Proceso;
 use App\Models\Procesos_archivo;
+use App\User;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use PDF;
+use Spatie\Permission\Traits\HasRoles;
 
 class ProcesosController extends Controller
 {
@@ -986,10 +989,12 @@ class ProcesosController extends Controller
     }
 
     public function acceso(Request $request) {
+
+        $user = User::role('admin')->get();
         $accesos = Acceso_proceso::with(['user', 'proceso'])->where('procesos_id', $request['id'])->get();
         $proceso = Proceso::find($request['id']);
 
-        return view('procesos.acceso', ['accesos' => $accesos, 'proceso' => $proceso]);
+        return view('procesos.acceso', ['accesos' => $accesos, 'proceso' => $proceso, 'usuarios'=>$user]);
     }
 
     public function agregar_acceso(Request $request) {
