@@ -35,7 +35,35 @@
             <a href="/procesos/ver/acceso/{{ $proceso[0]->id }}" class="btn btn-primary mb-2 ml-2 float-right"><i class="fa fa-lock mr-2"></i> Acceso </a>
         @endif
 
+        @if ($proceso[0]->users_id == auth()->user()->id || auth()->user()->hasRole('admin'))
+            <button class="btn btn-primary mb-2 ml-2 float-right" type="button" data-toggle="modal" data-target="#formatosModal"><i class="fa fa-file mr-2"></i> Formatos </button>
+            <!-- Modal -->
+            <div class="modal fade" id="formatosModal" tabindex="-1" role="dialog" aria-labelledby="formatosModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="formatosModalLabel">Formatos</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive table_e2">
+                                <table class="table table-hover table-vcenter table_custom spacing5 text-nowrap mb-3" id="tabla-formatos">
+
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <a href="/procesos/cosultas/inbox/{{ $proceso[0]->id }}" class="btn btn-primary mb-2 float-right"><i class="fa fa-envelope mr-2"></i> Consultas </a>
+
 
         @if (session()->has('update') && session()->has('update') == 1)
             <div class="alert alert-icon alert-success col-12" role="alert">

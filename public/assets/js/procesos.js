@@ -39,6 +39,8 @@ $(document).ready(function () {
             }
         }
     });
+
+    cargarFormatos();
 })
 
 $.ajaxSetup({
@@ -1021,4 +1023,39 @@ function select_tipo_demandado(tipo) {
         $('#verificacion_demandado_1').addClass('d-none');
         $('#tipo_demandante_label_1').text('Identificación ');
     }
+}
+
+function cargarFormatos() {
+    $.ajax({
+        url: '/administrador/get_formatos',
+        type: 'GET',
+        success: function(data) {
+            console.log(data);
+            var tabla = $('#tabla-formatos');
+            tabla.empty();
+            tabla.append('<thead><tr><th>#</th><th>Nombre de Archivo</th><th>Descripción</th><th class="text-center">Acciones</th></tr></thead>');
+            tabla.append('<tbody>');
+            for (var i = 0; i < data.length; i++) {
+                var formato = data[i];
+                // tabla.append(`<tr><td>${formato.nombre}</td><td>${formato.adjunto}</td><td>${formato.descripcion}</td></tr>`);
+                tabla.append(`
+                    <tr>
+                        <td>
+                            <span>${i+1}</span>
+                        </td>
+                        <td>
+                            <span>${formato.nombre}</span>
+                        </td>
+                        <td>
+                            <span>${formato.descripcion}</span>
+                        </td>
+                        <td class="text-center">
+                            <a href="/storage/${formato.adjunto}" target="_blank"><button type="button" class="btn btn-primary btn-sm" title="Ver"><i class="fa fa-eye"></i></button></a>
+                        </td>
+                    </tr>`
+                );
+            }
+            tabla.append('</tbody>');
+        }
+    });
 }
