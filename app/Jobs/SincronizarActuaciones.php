@@ -47,12 +47,20 @@ class SincronizarActuaciones implements ShouldQueue
         foreach ($procesos as $proceso) {
             if(strlen((string) $proceso->radicado) != 23) continue;
 
-            $ResponseProceso = Http::timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
+            $ResponseProceso = Http::withOptions([
+                    'debug' => true,
+                    'verify' => false,
+                ])
+                ->timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?SoloActivos=false&numero=' . $proceso->radicado);
             $DataProceso = json_decode($ResponseProceso, true);
 
             if(isset($DataProceso['procesos']) && is_array($DataProceso['procesos'])) {
                 $idProceso = $DataProceso['procesos'][0]['idProceso'] ?? null;
-                $ResponseActuaciones = Http::timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $idProceso . '?pagina=1');
+                $ResponseActuaciones = Http::withOptions([
+                        'debug' => true,
+                        'verify' => false,
+                    ])
+                    ->timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $idProceso . '?pagina=1');
                 $DataActuaciones = json_decode($ResponseActuaciones, true);
 
                 // dd($DataActuaciones);
@@ -82,7 +90,11 @@ class SincronizarActuaciones implements ShouldQueue
                 if(isset($DataActuaciones['paginacion']['cantidadPaginas']) && $DataActuaciones['paginacion']['cantidadPaginas'] > 1) {
                     for ($i = 2; $i <= $DataActuaciones['paginacion']['cantidadPaginas']; $i++) {
                         $idProceso = $DataProceso['procesos'][0]['idProceso'] ?? null;
-                        $ResponseActuaciones =  Http::timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $DataProceso['procesos'][0]['idProceso'] . '?pagina=' . $i);
+                        $ResponseActuaciones =  Http::withOptions([
+                                'debug' => true,
+                                'verify' => false,
+                            ])
+                            ->timeout(10000000000)->get('https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/' . $DataProceso['procesos'][0]['idProceso'] . '?pagina=' . $i);
                         $DataActuaciones = json_decode($ResponseActuaciones, true);
 
                         if(is_array($DataActuaciones['actuaciones'])) {
