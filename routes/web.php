@@ -135,9 +135,14 @@ Route::group(['middleware' => ['role:admin']], function () {
     Route::post('/administrador/pagina-web', 'AdminController@pagina_web_update');
     Route::get('/administrador/sincronizacion', 'AdminController@sincronizacion')->name('sincronizacion');
     Route::get('/administrador/sincronizacion/{id}', 'AdminController@sincronizacion_ver');
+    Route::get('/administrador/formatos', 'FormatosController@formatos')->name('formatos');
+    Route::get('/administrador/get_formatos', 'FormatosController@getFormatos');
+    Route::post('/administrador/agg_formatos', 'FormatosController@agg_formatos')->name('agg_formatos');
+    Route::post('/administrador/delete_formatos', 'FormatosController@delete_formatos');
 });
 
 Route::post('/sincronizar-procesos', 'ProcesosController@sincronizar_procesos');
 Route::get('/testjob', 'ProcesosController@sincronizar_procesos');
 
-// Rutas Email
+// Rutas Procesos
+Route::get('/solicitudes-procesos', 'SolicitudesProcesosController@index');

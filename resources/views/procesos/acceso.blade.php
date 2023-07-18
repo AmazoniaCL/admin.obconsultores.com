@@ -61,6 +61,31 @@
                     </div>
 
                     <table class="table table-bordered">
+                        @foreach ($usuarios as $key => $row)
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Nombre <br>
+                                        <b>{{ $row->name }}</b>
+                                    </td>
+                                    <td>
+                                        Identifiacion <br>
+                                        <b>{{ $row->identificacion ?? 'N/A' }}</b>
+                                    </td>
+                                    <td>
+                                        Telefono <br>
+                                        <b>{{ $row->telefono ?? 'N/A' }}</b>
+                                    </td>
+                                    <td>
+                                        Correo <br>
+                                        <b>{{ $row->email ?? 'N/A' }}</b>
+                                    </td>
+                                    <td rowspan="2" class="text-center">
+                                        {{-- <button type="button" class="btn btn-danger btn-sm" onclick="eliminar_acceso({{ $row->id }})" title="Eliminar"><i class="fa fa-trash-o"></i></button> --}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        @endforeach
                         @foreach ($accesos as $key => $row)
                             <tbody>
                                 <tr>
